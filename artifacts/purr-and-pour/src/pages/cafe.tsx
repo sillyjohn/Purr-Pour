@@ -16,8 +16,9 @@ import {
   type Pet,
 } from "@workspace/api-client-react";
 import { ShoppingBag, Settings2, UserRound, ClipboardList, PencilRuler, RotateCw, Lock, Check } from "lucide-react";
-import { PetSprite, SpeechCloud, usePetMachine } from "@/components/pet-sprite";
-import { AccountDrawer, AdminDrawer, CartDrawer, SettingsDrawer, StaffDrawer, type DrawerName } from "@/components/drawers";
+import { PetSprite, usePetMachine } from "@/components/pet-sprite";
+import { AccountDrawer, AdminDrawer, CartDrawer, ChalkDrawer, SettingsDrawer, StaffDrawer, type DrawerName } from "@/components/drawers";
+import { CafeScene } from "@/components/cafe-scene";
 import { STATUS_LINES, apiError, asset, basePath, blip, money, spriteKind, type CartLine } from "@/lib/cafe";
 
 const POKES = ["Mrrp! What'll it be?", "Oat milk? Bold choice.", "I only knock over empty cups.", "Pour-over takes four minutes. I counted.", "Scritch accepted.", "Don't tell the corgi, but you're my favorite."];
@@ -229,7 +230,6 @@ export default function Cafe() {
   const activeKind = activePet ? spriteKind(activePet) : "ginger";
   const cartCount = lines.reduce((s, l) => s + l.quantity, 0);
   const completed = me.data?.completedOrders ?? 0;
-  const activeOrders = (orders.data ?? []).filter((o) => o.status !== "collected" && o.status !== "cancelled");
 
   const poke = () => {
     pet.send("POKE");
@@ -262,8 +262,8 @@ export default function Cafe() {
   const navBtn = "px-btn font-pixel bg-card flex items-center gap-1.5 px-3 py-2 text-sm";
 
   return (
-    <div className="min-h-[100dvh]">
-      <a href="#menu" className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-50 bg-card p-2">Skip to menu</a>
+    <div className="cafe-root">
+      <a href="#scene-menu" className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-50 bg-card p-2">Skip to menu</a>
 
       {/* ---------- top bar ---------- */}
       <header className="sticky top-0 z-40 border-b-4 border-[hsl(var(--walnut))] bg-[hsl(var(--wall)/.92)] backdrop-blur">
@@ -277,6 +277,9 @@ export default function Cafe() {
             <span className={`h-2 w-2 ${live === "open" ? "bg-[hsl(140_45%_40%)]" : live === "down" ? "bg-destructive" : "bg-[hsl(var(--lamp))]"}`} />
             {live === "open" ? "live" : live === "down" ? "reconnecting" : "connecting"}
           </span>
+          <button className={navBtn} onClick={() => setDrawer("menu")} data-testid="button-open-menu"><span className="font-pixel">Menu</span></button>
+          <button className={`${navBtn} hidden sm:flex`} onClick={() => setDrawer("orders")} data-testid="button-open-orders"><ClipboardList size={16} /><span className="hidden md:inline">Tickets</span></button>
+          <button className={`${navBtn} hidden sm:flex`} onClick={() => setDrawer("pets")} data-testid="button-open-pets"><span className="font-pixel">Crew</span></button>
           {isStaff && <button className={navBtn} onClick={() => setDrawer("staff")} data-testid="button-open-staff"><ClipboardList size={16} /><span className="hidden md:inline">Rail</span></button>}
           {role === "admin" && <button className={navBtn} onClick={() => setDrawer("admin")} data-testid="button-open-admin"><PencilRuler size={16} /><span className="hidden md:inline">Board</span></button>}
           <button className={navBtn} aria-label="Settings" onClick={() => setDrawer("settings")} data-testid="button-open-settings"><Settings2 size={16} /></button>
@@ -288,239 +291,124 @@ export default function Cafe() {
         </div>
       </header>
 
-      {shop.data?.announcement && (
-        <p className="font-chalk bg-[hsl(var(--chalk))] py-1.5 text-center text-lg text-[hsl(var(--chalk-ink))]" data-testid="text-announcement">{shop.data.announcement}</p>
-      )}
-
-      {/* ---------- the scene ---------- */}
-      <section aria-label="The cafe counter" className="relative overflow-hidden">
-        <div className="mx-auto grid max-w-6xl gap-8 px-4 pt-10 md:grid-cols-[1.1fr_1fr] md:pt-14">
-          <div className="anim-rise relative z-10">
-            <p className="font-pixel text-primary text-sm tracking-[.2em] uppercase">Practice counter · no charges</p>
-            <h1 className="font-pixel mt-2 text-5xl leading-[.95] font-bold md:text-7xl">
-              Order from<br />the cat<br /><span className="text-[hsl(var(--denim))]">behind the bar.</span>
-            </h1>
-            <p className="text-muted-foreground mt-5 max-w-md text-lg">
-              Pick a drink, tune the milk, and meet your barista. Try a practice order today. Once live, paid pickups will earn stamps toward your next companion.
-            </p>
-            <div className="mt-6 flex flex-wrap gap-3">
-              <a href="#menu" className="px-btn font-pixel bg-primary text-primary-foreground px-5 py-3" data-testid="link-menu">See the board</a>
-              <button className="px-btn font-pixel bg-card px-5 py-3" onClick={() => document.getElementById("pets")?.scrollIntoView({ behavior: reduced ? "auto" : "smooth" })} data-testid="button-meet-pets">Meet the crew</button>
-            </div>
-          </div>
-
-          {/* wall slats - live menu board */}
-          <div className="relative min-h-[300px]">
-            <div className="lamp-beam anim-sway pointer-events-none absolute -top-14 left-1/2 h-[340px] w-[320px] -translate-x-1/2" aria-hidden />
-            <div className="absolute -top-14 left-1/2 h-8 w-1 -translate-x-1/2 bg-[hsl(var(--walnut))]" aria-hidden />
-            <div className="absolute -top-6 left-1/2 h-8 w-24 -translate-x-1/2 rounded-t-full bg-[hsl(210_8%_78%)] shadow-[inset_0_-6px_0_hsl(45_76%_79%)]" aria-hidden />
-            <ul className="relative mt-16 space-y-2" aria-label="Today's board">
-              {menu.isLoading
-                ? [0, 1, 2, 3, 4].map((i) => <li key={i} className="slat h-7 animate-pulse opacity-60" />)
-                : menuData.slice(0, 7).map((m, i) => (
-                    <li key={m.id} className="anim-rise" style={{ animationDelay: `${200 + i * 60}ms` }}>
-                      <button
-                        className="slat font-pixel flex w-full justify-between px-4 py-1 text-left text-lg uppercase hover:translate-x-1 transition-transform"
-                        onClick={() => { setCat(m.category); document.getElementById(`menu`)?.scrollIntoView({ behavior: reduced ? "auto" : "smooth" }); }}
-                        data-testid={`button-slat-${m.id}`}
-                      >
-                        <span className={m.available ? "" : "line-through opacity-60"}>{m.name}</span>
-                        <span>{(m.priceCents / 100).toFixed(2)}</span>
-                      </button>
-                    </li>
-                  ))}
-            </ul>
-          </div>
-        </div>
-
-        {/* counter */}
-        <div className="relative mt-24">
-          <div className="relative mx-auto flex max-w-6xl items-end gap-4 px-4">
-            <div className="absolute bottom-full left-4 mb-2 md:left-[14%]">
-              <SpeechCloud text={speech.text} id={speech.id} />
-            </div>
-            <button
-              className="relative ml-4 cursor-pointer md:ml-[12%]"
-              onClick={poke}
-              onPointerEnter={() => pet.state === "sleep" && pet.send("WAKE")}
-              aria-label={`Pet ${activePet?.name ?? "the barista"}. Currently ${pet.state}.`}
-              data-testid="button-poke-pet"
-            >
-              <PetSprite kind={activeKind} px={128} state={reduced && pet.state !== "sleep" ? "idle" : pet.state} />
-            </button>
-            {/* counter props */}
-            <div className="mb-1 flex items-end gap-3" aria-hidden>
-              <div className="relative h-14 w-10 border-4 border-[hsl(var(--walnut))] bg-[hsl(210_6%_70%)]">
-                <span className="steam absolute -top-6 left-3 h-5 w-1.5 bg-[hsl(34_60%_97%/.8)]" />
-              </div>
-              <div className="h-10 w-8 border-4 border-[hsl(var(--walnut))] bg-[hsl(34_60%_96%)]" />
-              <div className="h-8 w-7 border-4 border-[hsl(var(--walnut))] bg-[hsl(var(--denim))]" />
-            </div>
-            <div className="ml-auto hidden gap-6 pb-1 sm:flex" aria-hidden>
-              {petList.filter((p) => p.id !== activePet?.id).map((p) => (
-                <PetSprite key={p.id} kind={spriteKind(p)} px={72} state={me.data?.unlockedPets.includes(p.id) ? "sleep" : "idle"} locked={!me.data?.unlockedPets.includes(p.id)} />
-              ))}
-            </div>
-          </div>
-          <div className="h-5 bg-[hsl(34_40%_96%)] border-y-4 border-[hsl(var(--walnut))]" />
-          <div className="oak h-28 border-b-8 border-[hsl(var(--walnut))]" />
-        </div>
-      </section>
-
-      {/* ---------- active orders ---------- */}
-      <section aria-labelledby="orders-h" className="mx-auto max-w-6xl px-4 pt-14">
-        <div className="flex items-end justify-between gap-4">
-          <h2 id="orders-h" className="font-pixel text-3xl">Your tickets</h2>
-          <span className="font-chalk text-muted-foreground text-lg">{activeOrders.length} on the rail</span>
-        </div>
-        <div className="mt-4">
-          {orders.isLoading ? (
-            <div className="grid gap-4 md:grid-cols-2">{[0, 1].map((i) => <div key={i} className="bg-card px-border h-28 animate-pulse" />)}</div>
-          ) : orders.isError ? (
-            <ErrorBox msg={apiError(orders.error)} retry={() => orders.refetch()} />
-          ) : (orders.data ?? []).length === 0 ? (
-            <div className="bg-card px-border flex items-center gap-5 p-5">
-              <PetSprite kind={activeKind} px={64} state="sleep" />
-              <div>
-                <p className="font-pixel text-lg">No tickets yet.</p>
-                <p className="text-muted-foreground text-sm">Place a practice order to watch it go accepted, preparing, ready, live from the bar.</p>
-              </div>
-            </div>
-          ) : (
-            <ul className="grid gap-4 md:grid-cols-2">{(orders.data ?? []).slice(0, 6).map((o) => <OrderTicket key={o.id} o={o} />)}</ul>
-          )}
-        </div>
-      </section>
-
-      {/* ---------- menu ---------- */}
-      <section id="menu" aria-labelledby="menu-h" className="mx-auto max-w-6xl scroll-mt-24 px-4 pt-16">
-        <div className="flex flex-wrap items-end justify-between gap-4">
-          <div>
-            <h2 id="menu-h" className="font-pixel text-4xl">The board</h2>
-            <p className="text-muted-foreground">Prices in USD. Everything is made to order for pickup.</p>
-          </div>
-          <div role="tablist" aria-label="Menu category" className="flex gap-2"
-            onKeyDown={(e) => {
-              const cats = ["coffee", "tea", "treats"] as const;
-              const i = cats.indexOf(cat);
-              if (e.key === "ArrowRight") setCat(cats[(i + 1) % 3]);
-              if (e.key === "ArrowLeft") setCat(cats[(i + 2) % 3]);
-            }}>
-            {(["coffee", "tea", "treats"] as const).map((c) => (
-              <button key={c} role="tab" aria-selected={cat === c} tabIndex={cat === c ? 0 : -1}
-                className={`px-btn font-pixel px-4 py-2 text-sm uppercase ${cat === c ? "bg-[hsl(var(--walnut))] text-[hsl(var(--lamp))]" : "bg-card"}`}
-                onClick={() => setCat(c)} data-testid={`tab-${c}`}>{c}</button>
-            ))}
-          </div>
-        </div>
-        <div className="mt-6" role="tabpanel">
-          {menu.isLoading ? (
-            <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">{[0, 1, 2, 3, 4, 5].map((i) => <div key={i} className="bg-card px-border h-52 animate-pulse" />)}</div>
-          ) : menu.isError ? (
-            <ErrorBox msg={apiError(menu.error)} retry={() => menu.refetch()} />
-          ) : menuData.filter((m) => m.category === cat).length === 0 ? (
-            <p className="bg-card px-border p-6 font-pixel">Nothing in {cat} today. Check the other shelves.</p>
-          ) : (
-            <div key={cat} className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-              {menuData.filter((m) => m.category === cat).map((m, i) => <MenuCard key={m.id} item={m} i={i} onAdd={addLine} />)}
-            </div>
-          )}
-        </div>
-      </section>
-
-      {/* ---------- pets / loyalty ---------- */}
-      <section id="pets" aria-labelledby="pets-h" className="mt-20 scroll-mt-24 bg-[hsl(var(--chalk))] py-14 text-[hsl(var(--chalk-ink))]">
-        <div className="mx-auto max-w-6xl px-4">
-          <div className="flex flex-wrap items-end justify-between gap-4">
-            <div>
-              <h2 id="pets-h" className="font-pixel text-4xl text-[hsl(var(--lamp))]">The crew</h2>
-              <p className="font-chalk max-w-xl text-xl text-[hsl(var(--chalk-ink)/.75)]">
-                Baristas join your counter as loyalty milestones. They are never sold. Practice orders don't count toward stamps.
-              </p>
-            </div>
-            <p className="font-pixel text-lg" data-testid="text-completed-orders">{completed} {completed === 1 ? "order" : "orders"} stamped</p>
-          </div>
-          {!me.data?.signedIn && (
-            <p className="font-chalk mt-4 border-2 border-dashed border-[hsl(var(--lamp)/.5)] p-3 text-lg">
-              You're browsing as a guest. Your stamps and unlocked pets are stored in this browser only and can't be claimed later by email.{" "}
-              <button className="underline decoration-dashed text-[hsl(var(--lamp))]" onClick={() => setDrawer("account")} data-testid="button-guest-signin">Sign in</button> to carry them with you.
-            </p>
-          )}
-          {pets.isLoading ? (
-            <div className="mt-8 grid gap-6 md:grid-cols-3">{[0, 1, 2].map((i) => <div key={i} className="h-72 animate-pulse bg-[hsl(var(--chalk-ink)/.06)]" />)}</div>
-          ) : pets.isError ? (
-            <div className="mt-8"><ErrorBox msg={apiError(pets.error)} retry={() => pets.refetch()} /></div>
-          ) : (
-            <ul className="mt-8 grid gap-6 md:grid-cols-3">
-              {petList.map((p) => {
-                const unlocked = !!me.data?.unlockedPets.includes(p.id);
-                const equipped = me.data?.selectedPet === p.id;
-                const pct = Math.min(100, p.unlockAt === 0 ? 100 : (completed / p.unlockAt) * 100);
-                return (
-                  <li key={p.id} className="flex flex-col border-2 border-[hsl(var(--chalk-ink)/.3)] p-5" data-testid={`card-pet-${p.id}`}>
-                    <div className="flex h-36 items-end justify-center" style={{ background: `radial-gradient(circle at 50% 80%, ${p.color}33, transparent 65%)` }}>
-                      <PetPreview kind={spriteKind(p)} />
-                    </div>
-                    <h3 className="font-pixel mt-3 text-2xl">{p.name}</h3>
-                    <p className="font-chalk text-lg text-[hsl(var(--chalk-ink)/.65)]">{p.species} / {p.personality}</p>
-                    <div className="mt-3 h-3 bg-[hsl(var(--chalk-ink)/.12)]" role="progressbar" aria-valuenow={Math.round(pct)} aria-valuemin={0} aria-valuemax={100} aria-label={`${p.name} unlock progress`}>
-                      <div className="h-full bg-[hsl(var(--lamp))]" style={{ width: `${pct}%` }} />
-                    </div>
-                    <p className="font-chalk mt-1 text-lg">{p.unlockAt === 0 ? "Starter, on the house" : unlocked ? `Earned at ${p.unlockAt} orders` : `${Math.max(0, p.unlockAt - completed)} more orders to unlock`}</p>
-                    <button
-                      disabled={!unlocked || equipped || equip.isPending}
-                      onClick={() => equipPet(p)}
-                      className={`font-pixel mt-4 px-4 py-2 text-sm ${equipped ? "bg-[hsl(var(--lamp))] text-[hsl(var(--walnut))]" : "border-2 border-[hsl(var(--chalk-ink)/.7)] hover:bg-[hsl(var(--chalk-ink)/.1)]"} disabled:cursor-not-allowed ${!unlocked ? "opacity-50" : ""}`}
-                      data-testid={`button-equip-${p.id}`}
-                    >
-                      {equipped ? "On shift" : unlocked ? "Put on shift" : <span className="inline-flex items-center gap-1"><Lock size={14} />Preview only</span>}
-                    </button>
-                  </li>
-                );
-              })}
-            </ul>
-          )}
-        </div>
-      </section>
-
-      {/* ---------- how it works ---------- */}
-      <section aria-labelledby="how-h" className="mx-auto max-w-6xl px-4 py-16">
-        <h2 id="how-h" className="font-pixel text-3xl">How the counter works</h2>
-        <ol className="mt-6 grid gap-x-10 gap-y-6 md:grid-cols-[1fr_1.3fr]">
-          <li className="bg-card px-border p-5 md:row-span-2">
-            <p className="font-pixel text-primary text-5xl">01</p>
-            <p className="font-pixel mt-2 text-xl">Practice runs the real rail</p>
-            <p className="text-muted-foreground mt-1">A practice order is saved and moves through accepted, preparing and ready on the server. No charge, no actual coffee, no loyalty stamp.</p>
-          </li>
-          <li className="border-l-4 border-[hsl(var(--denim))] pl-4">
-            <p className="font-pixel text-xl">02 / Paid orders are waiting on the card reader</p>
-            <p className="text-muted-foreground">Online payment isn't connected yet. When it is, paid pickups will stamp your card.</p>
-          </li>
-          <li className="border-l-4 border-[hsl(var(--oak))] pl-4">
-            <p className="font-pixel text-xl">03 / Pickup at the counter</p>
-            <p className="text-muted-foreground">About {shop.data?.pickupMinutes ?? 10} minutes from accepted. Your barista shouts when it's ready.</p>
-          </li>
-        </ol>
-      </section>
-
-      <footer className="oak border-t-8 border-[hsl(var(--walnut))] py-8">
-        <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-4 px-4">
-          <p className="font-pixel text-lg text-[hsl(var(--walnut))]">{shop.data?.name ?? "Purr & Pour"} / pickup only / USD</p>
-          <img src={asset("/sprites/reference-cafe.png")} alt="Pixel art of the cafe counter with the ginger cat barista" className="pixelated h-24 w-auto border-4 border-[hsl(var(--walnut))]" />
-        </div>
-      </footer>
+      <div id="cafe-main" className="contents">
+        <CafeScene
+          menu={menuData}
+          loading={menu.isLoading}
+          pet={activePet}
+          petList={petList}
+          unlocked={me.data?.unlockedPets ?? []}
+          speech={speech}
+          petState={pet.state}
+          reduced={reduced}
+          cartCount={cartCount}
+          announcement={shop.data?.announcement}
+          onMenu={() => setDrawer("menu")}
+          onCategory={(category) => { setCat(category); setDrawer("menu"); }}
+          onPets={() => setDrawer("pets")}
+          onOrders={() => setDrawer("orders")}
+          onCart={() => setDrawer("cart")}
+          onPoke={poke}
+          onWake={() => { if (pet.state === "sleep") pet.send("WAKE"); }}
+        />
+      </div>
 
       {shop.isError && (
         <div className="fixed bottom-4 left-4 z-40"><ErrorBox msg={apiError(shop.error)} retry={() => shop.refetch()} /></div>
       )}
 
+      <ChalkDrawer open={drawer === "menu"} onClose={() => setDrawer(null)} title="The Board" desc="Choose a shelf, make it yours, and add it to your tab." testId="drawer-menu">
+        <div role="tablist" aria-label="Menu category" className="sticky top-0 z-10 -mx-2 mb-4 flex gap-2 bg-[hsl(140_6%_18%)] px-2 py-2"
+          onKeyDown={(e) => {
+            const cats = ["coffee", "tea", "treats"] as const;
+            const i = cats.indexOf(cat);
+            if (e.key === "ArrowRight") setCat(cats[(i + 1) % cats.length]);
+            if (e.key === "ArrowLeft") setCat(cats[(i + cats.length - 1) % cats.length]);
+          }}>
+          {(["coffee", "tea", "treats"] as const).map((c) => (
+            <button key={c} role="tab" aria-selected={cat === c} tabIndex={cat === c ? 0 : -1}
+              className={`font-pixel min-h-11 flex-1 border-2 px-2 py-2 text-sm uppercase ${cat === c ? "border-[hsl(var(--lamp))] bg-[hsl(var(--lamp))] text-[hsl(var(--walnut))]" : "border-[hsl(var(--chalk-ink)/.6)] text-[hsl(var(--chalk-ink))]"}`}
+              onClick={() => setCat(c)} data-testid={`tab-${c}`}>{c}</button>
+          ))}
+        </div>
+        {menu.isLoading ? (
+          <div className="space-y-4" aria-label="Loading menu">{[0, 1, 2].map((i) => <div key={i} className="h-40 animate-pulse border-2 border-[hsl(var(--chalk-ink)/.18)] bg-[hsl(var(--chalk-ink)/.06)]" />)}</div>
+        ) : menu.isError ? (
+          <ErrorBox msg={apiError(menu.error)} retry={() => menu.refetch()} />
+        ) : menuData.filter((m) => m.category === cat).length === 0 ? (
+          <p className="border-2 border-dashed border-[hsl(var(--chalk-ink)/.4)] p-5 font-pixel">Nothing in {cat} today. Try another shelf.</p>
+        ) : (
+          <div role="tabpanel" className="space-y-4">
+            {menuData.filter((m) => m.category === cat).map((m, i) => <MenuCard key={m.id} item={m} i={i} onAdd={addLine} />)}
+          </div>
+        )}
+      </ChalkDrawer>
+
+      <ChalkDrawer open={drawer === "pets"} onClose={() => setDrawer(null)} title="The Crew" desc="Baristas join your counter as loyalty milestones. Practice orders never count toward stamps." testId="drawer-pets">
+        <div className="mb-4 flex items-center justify-between border-b border-dashed border-[hsl(var(--chalk-ink)/.3)] pb-3">
+          <span className="font-pixel text-[hsl(var(--lamp))]" data-testid="text-completed-orders">{completed} {completed === 1 ? "order" : "orders"} stamped</span>
+          {!me.data?.signedIn && <button className="min-h-11 underline decoration-dashed" onClick={() => setDrawer("account")} data-testid="button-guest-signin">Sign in to keep progress</button>}
+        </div>
+        {pets.isLoading ? (
+          <div className="space-y-4">{[0, 1, 2].map((i) => <div key={i} className="h-48 animate-pulse border-2 border-[hsl(var(--chalk-ink)/.15)]" />)}</div>
+        ) : pets.isError ? (
+          <ErrorBox msg={apiError(pets.error)} retry={() => pets.refetch()} />
+        ) : (
+          <ul className="space-y-4">
+            {petList.map((p) => {
+              const unlocked = !!me.data?.unlockedPets.includes(p.id);
+              const equipped = me.data?.selectedPet === p.id;
+              const pct = Math.min(100, p.unlockAt === 0 ? 100 : (completed / p.unlockAt) * 100);
+              return (
+                <li key={p.id} className="border-2 border-[hsl(var(--chalk-ink)/.3)] p-3" data-testid={`card-pet-${p.id}`}>
+                  <div className="flex items-center gap-3">
+                    <div className="flex h-24 w-24 shrink-0 items-end justify-center" style={{ background: `radial-gradient(circle at 50% 80%, ${p.color}33, transparent 65%)` }}>
+                      <PetPreview kind={spriteKind(p)} />
+                    </div>
+                    <div className="min-w-0">
+                      <h3 className="font-pixel text-xl">{p.name}</h3>
+                      <p className="text-[hsl(var(--chalk-ink)/.7)]">{p.species} / {p.personality}</p>
+                      <p className="mt-1 text-sm">{p.unlockAt === 0 ? "Starter, on the house" : unlocked ? `Earned at ${p.unlockAt} orders` : `${Math.max(0, p.unlockAt - completed)} more orders`}</p>
+                    </div>
+                  </div>
+                  <div className="mt-3 h-2 bg-[hsl(var(--chalk-ink)/.15)]" role="progressbar" aria-valuenow={Math.round(pct)} aria-valuemin={0} aria-valuemax={100} aria-label={`${p.name} unlock progress`}>
+                    <div className="h-full bg-[hsl(var(--lamp))]" style={{ width: `${pct}%` }} />
+                  </div>
+                  <button disabled={!unlocked || equipped || equip.isPending} onClick={() => equipPet(p)}
+                    className={`font-pixel mt-3 min-h-11 w-full border-2 px-3 py-2 text-sm ${equipped ? "border-[hsl(var(--lamp))] bg-[hsl(var(--lamp))] text-[hsl(var(--walnut))]" : "border-[hsl(var(--chalk-ink)/.7)] hover:bg-[hsl(var(--chalk-ink)/.1)]"} disabled:cursor-not-allowed disabled:opacity-50`}
+                    data-testid={`button-equip-${p.id}`}>
+                    {equipped ? "On shift" : unlocked ? "Put on shift" : <span className="inline-flex items-center gap-1"><Lock size={14} />Preview only</span>}
+                  </button>
+                </li>
+              );
+            })}
+          </ul>
+        )}
+      </ChalkDrawer>
+
+      <ChalkDrawer open={drawer === "orders"} onClose={() => setDrawer(null)} title="Your Tickets" desc="Follow every cup from the rail to the pickup counter." testId="drawer-orders">
+        {orders.isLoading ? (
+          <div className="space-y-4">{[0, 1, 2].map((i) => <div key={i} className="h-28 animate-pulse border-2 border-[hsl(var(--chalk-ink)/.15)]" />)}</div>
+        ) : orders.isError ? (
+          <ErrorBox msg={apiError(orders.error)} retry={() => orders.refetch()} />
+        ) : (orders.data ?? []).length === 0 ? (
+          <div className="py-8 text-center">
+            <PetSprite kind={activeKind} px={72} state="sleep" />
+            <p className="font-pixel mt-2 text-xl text-[hsl(var(--lamp))]">No tickets yet.</p>
+            <p className="mt-1 text-lg text-[hsl(var(--chalk-ink)/.7)]">A practice ticket runs through the live kitchen queue. No charge.</p>
+            <button className="font-pixel mt-4 min-h-11 border-2 border-[hsl(var(--lamp))] px-4 py-2" onClick={() => setDrawer("menu")} data-testid="button-orders-menu">Browse the board</button>
+          </div>
+        ) : (
+          <ul className="space-y-4">{(orders.data ?? []).slice(0, 12).map((o) => <OrderTicket key={o.id} o={o} />)}</ul>
+        )}
+      </ChalkDrawer>
+
       <CartDrawer open={drawer === "cart"} onClose={() => setDrawer(null)} lines={lines} setLines={setLines} menu={menuData} shop={shop.data} me={me.data}
         onPlaced={(o) => {
-          setDrawer(null);
+          setDrawer("orders");
           statusRef.current.set(o.id, o.status);
           pet.send("BREW");
           say(`Ticket #${o.number}${o.practice ? " (practice)" : ""}. ${STATUS_LINES[o.status] ?? ""}`);
-          document.getElementById("orders-h")?.scrollIntoView({ behavior: reduced ? "auto" : "smooth" });
         }} />
       <SettingsDrawer open={drawer === "settings"} onClose={() => setDrawer(null)} me={me.data} pets={petList} />
       <AccountDrawer open={drawer === "account"} onClose={() => setDrawer(null)} me={me.data} />

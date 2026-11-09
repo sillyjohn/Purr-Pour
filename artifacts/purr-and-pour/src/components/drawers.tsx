@@ -22,9 +22,9 @@ import { Minus, Plus, Trash2, Lock, RotateCw } from "lucide-react";
 import { apiError, basePath, money, spriteKind, uuid, type CartLine } from "@/lib/cafe";
 import { PetSprite } from "@/components/pet-sprite";
 
-export type DrawerName = "cart" | "settings" | "account" | "staff" | "admin" | null;
+export type DrawerName = "menu" | "pets" | "orders" | "cart" | "settings" | "account" | "staff" | "admin" | null;
 
-function ChalkDrawer({
+export function ChalkDrawer({
   open,
   onClose,
   title,
@@ -44,7 +44,7 @@ function ChalkDrawer({
       <SheetContent
         side="right"
         data-testid={testId}
-        className="chalkboard w-full overflow-y-auto border-y-0 border-r-0 p-0 sm:max-w-[460px] [&>button]:text-[hsl(var(--chalk-ink))]"
+        className="chalkboard max-h-[100dvh] w-full overflow-y-auto overscroll-contain border-y-0 border-r-0 p-0 pb-[env(safe-area-inset-bottom)] sm:max-w-[460px] [&>button]:text-[hsl(var(--chalk-ink))]"
       >
         <div className="p-6 pb-10">
           <SheetHeader className="mb-5 text-left">

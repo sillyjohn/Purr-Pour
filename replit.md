@@ -43,6 +43,8 @@ Guest ordering, customizable menu/cart, pet preview and interaction, server-owne
 
 - US coffee shop. Pets unlock through loyalty milestones; incoming orders are managed by staff inside this app rather than an existing POS.
 - Single-page consumer experience; settings and checkout use stylized chalkboard side drawers. Most graphics should be pixelized, based on the supplied coffee-counter art and Piskel animations.
+- The main page must not scroll: scale the café scene to the viewport on desktop, iPhones, and mainstream phones, with the coffee station and barista anchored bottom-center and the coffee menu above them.
+- Preserve the current fonts, pixel button designs, icons, and chalkboard side-drawer styling; the user explicitly approved these.
 - User requested Java/Spring Boot with Railway as the eventual backend deployment target, RabbitMQ + SSE order updates, account-optional ordering with contact details, role-based access and admin editing on the same page, and Stripe with Apple Pay/Google Pay where supported.
 
 ## Gotchas

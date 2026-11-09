@@ -82,10 +82,12 @@ const clerkAppearance = {
 
 function AuthStage({ children }: { children: ReactNode }) {
   return (
-    <div className="flex min-h-[100dvh] flex-col items-center justify-center gap-6 bg-background px-4 py-10">
-      <img src={`${basePath}/sprites/draft.png`} alt="" className="hidden" />
-      {children}
-      <a href={`${basePath}/`} className="font-pixel text-sm underline">Back to the counter</a>
+    <div className="h-[100dvh] overflow-y-auto overscroll-contain bg-background">
+      <div className="flex min-h-full flex-col items-center justify-center gap-6 px-4 py-10">
+        <img src={`${basePath}/sprites/draft.png`} alt="" className="hidden" />
+        {children}
+        <a href={`${basePath}/`} className="font-pixel text-sm underline">Back to the counter</a>
+      </div>
     </div>
   );
 }
