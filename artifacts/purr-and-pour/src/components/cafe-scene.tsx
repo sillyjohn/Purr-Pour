@@ -24,27 +24,21 @@ type CafeSceneProps = {
 };
 
 export function CafeScene({
-  menu, loading, pet, petList, unlocked, speech, petState, reduced, cartCount, announcement,
+  menu, loading, pet, petList, unlocked, speech, petState, reduced, cartCount,
   onMenu, onCategory, onPets, onOrders, onCart, onPoke, onWake,
 }: CafeSceneProps) {
-  const boardItems = menu.slice(0, 4);
+  const boardItems = menu.slice(0, 10);
   const kind = pet ? spriteKind(pet) : "ginger";
   return (
     <main className="cafe-playfield" aria-label="Purr & Pour cafe">
       <div className="cafe-wall" aria-hidden="true">
-        <div className="wall-window"><i /><i /><i /><i /></div>
-        <div className="wall-shelf"><span /><span /><span /><span /></div>
         <div className="wall-lamp"><span /></div>
         <div className="beam" />
       </div>
-      {announcement && <div className="announcement font-chalk" role="status">{announcement}</div>}
 
       <section className="menu-board" aria-label="Today's menu">
         <div className="board-heading">
-          <div>
-            <p className="board-kicker font-pixel">The daily pour</p>
-            <h1 className="font-pixel">On the board</h1>
-          </div>
+          <p className="board-kicker font-pixel">Today</p>
           <button className="board-all font-pixel" onClick={onMenu} data-testid="button-open-menu">Full menu <span aria-hidden>+</span></button>
         </div>
         <ul className="board-lines">
@@ -57,7 +51,6 @@ export function CafeScene({
             </li>
           ))}
         </ul>
-        <p className="board-foot font-chalk">Made to order · pickup only</p>
       </section>
 
       <div className="scene-action-rail" aria-label="Cafe shortcuts">
