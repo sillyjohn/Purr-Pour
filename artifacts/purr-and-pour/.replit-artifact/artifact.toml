@@ -1,0 +1,28 @@
+kind = "web"
+previewPath = "/"
+title = "Purr & Pour"
+description = "A playable pixel-art neighborhood coffee shop with collectible pet baristas, guest ordering, loyalty milestones, and an in-app staff queue."
+version = "1.0.0"
+id = "artifacts/purr-and-pour"
+router = "path"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 25705
+
+[services.development]
+run = "pnpm --filter @workspace/purr-and-pour run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/purr-and-pour", "run", "build" ]
+serve = "static"
+publicDir = "artifacts/purr-and-pour/dist/public"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "25705"
+BASE_PATH = "/"

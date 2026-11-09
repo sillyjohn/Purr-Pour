@@ -24,8 +24,258 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+  /shop:
+    get:
+      operationId: getShop
+      responses:
+        "200":
+          description: Shop settings and integration capabilities
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Shop" }
+  /menu:
+    get:
+      operationId: getMenu
+      responses:
+        "200":
+          description: Available drinks and treats
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/MenuItem" }
+  /pets:
+    get:
+      operationId: getPets
+      responses:
+        "200":
+          description: Pet barista designs and loyalty thresholds
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/Pet" }
+  /me:
+    get:
+      operationId: getMe
+      responses:
+        "200":
+          description: Current customer and earned collection
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Customer" }
+    patch:
+      operationId: updatePreferences
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/PreferencesInput" }
+      responses:
+        "200":
+          description: Saved preferences
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Customer" }
+  /orders:
+    get:
+      operationId: getOrders
+      responses:
+        "200":
+          description: Only orders belonging to the current customer
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/Order" }
+    post:
+      operationId: placeOrder
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/OrderInput" }
+      responses:
+        "201":
+          description: Created practice order or unpaid checkout
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Order" }
+        "503": { description: Payment service not configured }
+  /staff/orders:
+    get:
+      operationId: getStaffOrders
+      responses:
+        "200":
+          description: Staff queue, staff or admin only
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/Order" }
+        "403": { description: Staff access required }
+  /staff/orders/{id}:
+    patch:
+      operationId: updateOrderStatus
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/OrderStatusInput" }
+      responses:
+        "200":
+          description: Updated order
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Order" }
+  /admin/menu/{id}:
+    patch:
+      operationId: updateMenuItem
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/MenuItemInput" }
+      responses:
+        "200":
+          description: Saved menu item, admin only
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/MenuItem" }
+  /events:
+    get:
+      operationId: streamEvents
+      responses:
+        "200":
+          description: SSE stream; use native EventSource. Named order event contains Order JSON.
+          content:
+            text/event-stream:
+              schema: { type: string }
 components:
   schemas:
+    Shop:
+      type: object
+      required: [name, currency, announcement, paymentEnabled, rabbitEnabled, practiceMode, pickupMinutes]
+      properties:
+        name: { type: string }
+        currency: { type: string }
+        announcement: { type: string }
+        paymentEnabled: { type: boolean }
+        rabbitEnabled: { type: boolean }
+        practiceMode: { type: boolean }
+        pickupMinutes: { type: integer }
+    MenuItem:
+      type: object
+      required: [id, name, description, category, priceCents, available, icon, badge]
+      properties:
+        id: { type: string }
+        name: { type: string }
+        description: { type: string }
+        category: { type: string, enum: [coffee, tea, treats] }
+        priceCents: { type: integer }
+        available: { type: boolean }
+        icon: { type: string }
+        badge: { type: string }
+    MenuItemInput:
+      type: object
+      required: [name, description, priceCents, available]
+      properties:
+        name: { type: string, minLength: 1, maxLength: 80 }
+        description: { type: string, maxLength: 250 }
+        priceCents: { type: integer, minimum: 50, maximum: 10000 }
+        available: { type: boolean }
+    Pet:
+      type: object
+      required: [id, name, species, personality, unlockAt, color]
+      properties:
+        id: { type: string }
+        name: { type: string }
+        species: { type: string }
+        personality: { type: string }
+        unlockAt: { type: integer }
+        color: { type: string }
+    Customer:
+      type: object
+      required: [signedIn, name, role, completedOrders, selectedPet, reducedMotion, soundEnabled, unlockedPets]
+      properties:
+        signedIn: { type: boolean }
+        name: { type: string }
+        role: { type: string, enum: [customer, staff, admin] }
+        completedOrders: { type: integer }
+        selectedPet: { type: string }
+        reducedMotion: { type: boolean }
+        soundEnabled: { type: boolean }
+        unlockedPets:
+          type: array
+          items: { type: string }
+    PreferencesInput:
+      type: object
+      properties:
+        selectedPet: { type: string }
+        reducedMotion: { type: boolean }
+        soundEnabled: { type: boolean }
+    OrderLineInput:
+      type: object
+      required: [menuItemId, quantity, milk, temperature]
+      properties:
+        menuItemId: { type: string }
+        quantity: { type: integer, minimum: 1, maximum: 10 }
+        milk: { type: string, enum: [whole, oat, almond, none] }
+        temperature: { type: string, enum: [hot, iced] }
+    OrderInput:
+      type: object
+      required: [customerName, email, lines, practice, requestId]
+      properties:
+        customerName: { type: string, minLength: 1, maxLength: 80 }
+        email: { type: string, format: email }
+        notes: { type: string, maxLength: 300 }
+        practice: { type: boolean }
+        requestId: { type: string, minLength: 10, maxLength: 100 }
+        lines:
+          type: array
+          minItems: 1
+          maxItems: 20
+          items: { $ref: "#/components/schemas/OrderLineInput" }
+    OrderLine:
+      type: object
+      required: [name, quantity, unitPriceCents, milk, temperature]
+      properties:
+        name: { type: string }
+        quantity: { type: integer }
+        unitPriceCents: { type: integer }
+        milk: { type: string }
+        temperature: { type: string }
+    Order:
+      type: object
+      required: [id, number, customerName, status, totalCents, createdAt, practice, paymentStatus, lines, notes]
+      properties:
+        id: { type: string }
+        number: { type: string }
+        customerName: { type: string }
+        status: { type: string, enum: [accepted, preparing, ready, collected, cancelled] }
+        totalCents: { type: integer }
+        createdAt: { type: string }
+        practice: { type: boolean }
+        paymentStatus: { type: string }
+        notes: { type: string }
+        lines:
+          type: array
+          items: { $ref: "#/components/schemas/OrderLine" }
+    OrderStatusInput:
+      type: object
+      required: [status]
+      properties:
+        status: { type: string, enum: [preparing, ready, collected, cancelled] }
     HealthStatus:
       type: object
       properties:
