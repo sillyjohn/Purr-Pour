@@ -1,0 +1,142 @@
+.wooden-welcome-sign {
+  position: absolute;
+  z-index: 2;
+  top: 21%;
+  left: clamp(18px, 4vw, 58px);
+  width: clamp(220px, 24vw, 310px);
+  padding-top: 19px;
+  color: #302219;
+  font-family: "Pixelify Sans", monospace;
+  text-align: center;
+  pointer-events: none;
+}
+
+.wooden-welcome-plank {
+  position: relative;
+  padding: clamp(11px, 1.25vw, 17px) clamp(12px, 1.5vw, 20px) 12px;
+  background:
+    repeating-linear-gradient(0deg, transparent 0 17px, rgb(95 53 27 / 8%) 17px 19px),
+    linear-gradient(180deg, #e5b985 0%, #cf9860 47%, #b77948 100%);
+  border: 3px solid #68452e;
+  box-shadow:
+    inset 0 0 0 2px rgb(255 226 176 / 45%),
+    inset 0 -5px 0 rgb(92 53 30 / 22%),
+    4px 5px 0 #714b32,
+    8px 10px 0 rgb(55 42 32 / 18%);
+}
+
+.wooden-welcome-plank::before,
+.wooden-welcome-plank::after {
+  position: absolute;
+  left: 7px;
+  right: 7px;
+  height: 2px;
+  content: "";
+  background: rgb(255 227 183 / 30%);
+}
+
+.wooden-welcome-plank::before { top: 6px; }
+.wooden-welcome-plank::after { bottom: 5px; background: rgb(105 62 36 / 25%); }
+
+.wooden-welcome-greeting {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: center;
+  column-gap: 0.34em;
+  row-gap: 2px;
+  margin: 0;
+  font-size: clamp(20px, 2vw, 27px);
+  font-weight: 700;
+  line-height: 1.12;
+  overflow-wrap: anywhere;
+  text-shadow: 1px 1px 0 rgb(255 224 174 / 48%);
+}
+
+.wooden-welcome-name {
+  max-width: 100%;
+  overflow-wrap: anywhere;
+}
+
+.wooden-welcome-inlay {
+  display: block;
+  width: 82%;
+  height: 3px;
+  margin: 9px auto 7px;
+  background: #96613c;
+  box-shadow: 0 1px 0 rgb(255 222 170 / 55%);
+}
+
+.wooden-welcome-helper {
+  position: relative;
+  z-index: 1;
+  margin: 0;
+  font-family: "VT323", monospace;
+  font-size: clamp(19px, 1.8vw, 24px);
+  line-height: 1;
+  letter-spacing: 0.015em;
+  overflow-wrap: anywhere;
+}
+
+.wooden-welcome-cord {
+  position: absolute;
+  top: 0;
+  width: 2px;
+  height: 23px;
+  background: #5b4735;
+  box-shadow: 1px 0 0 rgb(238 215 175 / 45%);
+}
+
+.wooden-welcome-cord-left { left: 17%; transform: rotate(8deg); }
+.wooden-welcome-cord-right { right: 17%; transform: rotate(-8deg); }
+
+.wooden-welcome-nail {
+  position: absolute;
+  top: -1px;
+  width: 7px;
+  height: 7px;
+  background: #77736d;
+  border: 1px solid #4d4944;
+  box-shadow: 1px 1px 0 rgb(255 255 255 / 35%);
+}
+
+.wooden-welcome-nail-left { left: calc(17% - 2px); }
+.wooden-welcome-nail-right { right: calc(17% - 2px); }
+
+@media (max-width: 640px) {
+  .wooden-welcome-sign {
+    top: 13%;
+    left: 12px;
+    width: min(42vw, 205px);
+    min-width: 146px;
+    padding-top: 15px;
+  }
+
+  .wooden-welcome-plank {
+    padding: 10px 9px 9px;
+    border-width: 2px;
+  }
+
+  .wooden-welcome-greeting { font-size: clamp(17px, 4.5vw, 22px); }
+  .wooden-welcome-helper { font-size: clamp(17px, 4.1vw, 20px); }
+  .wooden-welcome-inlay { margin: 7px auto 6px; }
+
+  .welcome-wall-root:has(.wooden-welcome-sign) .menu-board {
+    top: 34%;
+    max-height: 43%;
+  }
+}
+
+@media (max-height: 620px) {
+  .wooden-welcome-sign {
+    top: 12%;
+    width: clamp(190px, 22vw, 260px);
+    padding-top: 13px;
+  }
+
+  .wooden-welcome-plank { padding-top: 8px; padding-bottom: 8px; }
+  .wooden-welcome-greeting { font-size: 19px; }
+  .wooden-welcome-helper { font-size: 18px; }
+
+  .welcome-wall-root:has(.wooden-welcome-sign) .menu-board { top: 8px; }
+}

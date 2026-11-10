@@ -1,0 +1,148 @@
+.painted-welcome {
+  position: absolute;
+  z-index: 2;
+  top: 31%;
+  left: clamp(20px, 5.2vw, 76px);
+  width: clamp(170px, 21vw, 286px);
+  color: #574d42;
+  pointer-events: none;
+  transform: rotate(-1deg);
+  text-shadow: 1px 1px 0 rgb(255 255 255 / 42%);
+  animation: painted-welcome-settle 480ms ease-out both;
+}
+
+.painted-welcome__mark {
+  display: flex;
+  align-items: end;
+  gap: 3px;
+  width: 27px;
+  height: 15px;
+  margin: 0 0 8px 3px;
+  opacity: .72;
+}
+
+.painted-welcome__mark span {
+  display: block;
+  width: 6px;
+  height: 6px;
+  background: #bd7454;
+}
+
+.painted-welcome__mark span:nth-child(2) {
+  height: 12px;
+  background: #d6a663;
+}
+
+.painted-welcome__mark span:nth-child(3) {
+  height: 9px;
+  background: #77817a;
+}
+
+.painted-welcome__hello {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  column-gap: .28em;
+  row-gap: 0;
+  margin: 0;
+  font-family: "Pixelify Sans", monospace;
+  font-size: clamp(21px, 2.65vw, 36px);
+  font-weight: 700;
+  line-height: 1.04;
+  letter-spacing: -.035em;
+  overflow-wrap: anywhere;
+}
+
+.painted-welcome__welcome {
+  white-space: nowrap;
+}
+
+.painted-welcome__name {
+  color: #986047;
+  overflow-wrap: anywhere;
+}
+
+.painted-welcome__offer {
+  max-width: 260px;
+  margin: 8px 0 0 2px;
+  color: #70655a;
+  font-family: "VT323", monospace;
+  font-size: clamp(20px, 2.1vw, 28px);
+  line-height: .95;
+  letter-spacing: .015em;
+}
+
+.painted-welcome__underline {
+  display: block;
+  width: min(88%, 208px);
+  height: 4px;
+  margin: 11px 0 0 3px;
+  background: repeating-linear-gradient(90deg, #b77a58 0 9px, transparent 9px 13px);
+  opacity: .68;
+}
+
+@keyframes painted-welcome-settle {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@media (max-width: 640px) {
+  .cafe-playfield:has(.painted-welcome) .menu-board {
+    top: 30%;
+  }
+
+  .painted-welcome {
+    top: 17%;
+    left: 50%;
+    width: min(86vw, 360px);
+    text-align: center;
+    transform: translateX(-50%) rotate(-.5deg);
+  }
+
+  .painted-welcome__mark {
+    justify-content: center;
+    margin: 0 auto 3px;
+  }
+
+  .painted-welcome__hello {
+    justify-content: center;
+    font-size: clamp(20px, 5.8vw, 27px);
+  }
+
+  .painted-welcome__offer {
+    max-width: none;
+    margin-top: 4px;
+    font-size: clamp(17px, 4.6vw, 22px);
+  }
+
+  .painted-welcome__underline {
+    width: 90px;
+    height: 3px;
+    margin: 5px auto 0;
+  }
+}
+
+@media (max-width: 380px) {
+  .cafe-playfield:has(.painted-welcome) .menu-board {
+    top: 32%;
+  }
+
+  .painted-welcome {
+    top: 18%;
+    width: 92vw;
+  }
+
+  .painted-welcome__hello {
+    font-size: clamp(18px, 5.4vw, 21px);
+  }
+
+  .painted-welcome__offer {
+    font-size: 17px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .painted-welcome {
+    animation: none;
+  }
+}
