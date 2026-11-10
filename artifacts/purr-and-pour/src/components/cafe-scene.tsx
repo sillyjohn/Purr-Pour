@@ -34,7 +34,26 @@ export function CafeScene({
   return (
     <main className="cafe-playfield" aria-label="Purr & Pour cafe">
       <div className="cafe-wall" aria-hidden="true">
-        <div className="wall-lamp"><span /></div>
+        <div className="wall-lamp">
+          <span className="lamp-cord" />
+          <svg className="lamp-fixture" viewBox="0 0 120 50" preserveAspectRatio="none" role="presentation" shapeRendering="crispEdges" aria-hidden="true">
+            <g stroke="#353a3e" strokeWidth="3" strokeLinejoin="miter">
+              <path fill="#737b82" d="M55 0h10v5h4v5h9v5h8v6h8v8h7v9h5v8H14v-8h5v-9h7v-8h8v-6h8v-5h9V5h4z" />
+              <path fill="#c3c8cb" d="M55 4h7v7h-5v5h-8v6h-7v7h-7v8H22v-5h7v-8h7v-7h8v-6h8v-5h3z" stroke="none" />
+              <path fill="#a0a7ac" d="M62 4h3v7h7v5h7v6h7v7h7v8H42v-8h7v-7h7v-6h5v-6h3z" stroke="none" />
+              <path fill="#666e75" d="M65 4h3v6h9v5h8v6h8v8h6v8H69v-8h5v-7h-5v-6h-4v-6h-3z" stroke="none" />
+              <path fill="#8f979d" d="M22 38h76v6H22z" stroke="none" />
+              <path fill="#545b61" d="M18 43h84v5H18z" stroke="none" />
+              <path fill="#d4d7d8" d="M22 39h18v3H22zM78 39h16v3H78z" stroke="none" />
+              <path fill="#9b8b70" d="M38 39h44v7H38z" stroke="none" />
+              <path fill="#f5d48c" d="M48 39h24v7H48z" stroke="none" />
+              <path fill="#fff0bd" d="M52 39h12v3H52z" stroke="none" />
+              <path fill="#c99f61" d="M45 46h30v2H45z" stroke="none" />
+            </g>
+            <path d="M43 18h5v-4h7v-4h6" fill="none" stroke="#eef0ef" strokeWidth="2" />
+            <path d="M91 25h4v7h4" fill="none" stroke="#42494e" strokeWidth="2" />
+          </svg>
+        </div>
         <div className="beam" />
       </div>
 

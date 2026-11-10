@@ -45,7 +45,7 @@ Guest ordering, customizable menu/cart, pet preview and interaction, server-owne
 - Single-page consumer experience; settings and checkout use stylized chalkboard side drawers. Most graphics should be pixelized, based on the supplied coffee-counter art and Piskel animations.
 - The main page must not scroll: scale the café scene to the viewport on desktop, iPhones, and mainstream phones, with the coffee station and barista anchored bottom-center and the coffee menu above them.
 - Preserve the current fonts, pixel button designs, icons, and chalkboard side-drawer styling; the user explicitly approved these.
-- Match the supplied concept closely: white/light-gray background, a silver lamp hanging in the middle, and wooden menu slats. Keep chalkboard styling for side drawers.
+- Match the supplied concept closely: white/light-gray background, a centered hanging silver lamp with pixel-art edges and 2.5D shading matching the coffee-station artwork, and wooden menu slats. Keep chalkboard styling for side drawers.
 - Use the supplied coffee-station artwork for the fixed bottom-centered counter, extending its wooden floor to both sides. Preserve the artwork's 2.5D perspective rather than a flat front-view counter.
 - The user chose painted pixel lettering for the wall greeting: "Welcome [user name]" with "hairy stranger" when no username is available, positioned higher on the wall. The barista, not the wall lettering, should say "What can meow do for you today?" in its speech bubble.
 - User requested Java/Spring Boot with Railway as the eventual backend deployment target, RabbitMQ + SSE order updates, account-optional ordering with contact details, role-based access and admin editing on the same page, and Stripe with Apple Pay/Google Pay where supported.
