@@ -1,0 +1,16 @@
+uploads = []
+generated = []
+
+[[outputs]]
+id = "undmdR5oo6xH0oF5Dn9Pf"
+uri = "file://screenshots/purr-and-pour-layout-variant.jpg"
+type = "image"
+title = "Purr & Pour — split-layout variation"
+description = "Alternative spatial arrangement: navigation on the left, your artwork and animated pet in the center, and the menu and tab on the right. Original app unchanged."
+logical_id = "91737161-c813-4ea7-8e5f-804142d21b78"
+content_hash = "sha256:1c5d8be5de33f1529d7d6092b4de4bd5bce71f0127f54319409be002b1856ee3"
+size = 111815
+mtime_ms = 1794344275490
+storage_uri = "gcs://replit-rams-assets-spock/rams/assets/repl:3689672a-39b3-4930-814b-5dfa16ae8b52/91737161-c813-4ea7-8e5f-804142d21b78/bf09dcbe-3b94-4128-ad63-ab23c10f5233"
+storage_version_token = "1794344287416021"
+content_type = "image/jpeg"
