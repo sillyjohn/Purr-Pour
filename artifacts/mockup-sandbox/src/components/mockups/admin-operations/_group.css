@@ -1,0 +1,263 @@
+@import url('https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400;600;700&family=VT323&family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&display=swap');
+:root {
+  --button-outline: rgba(0, 0, 0, 0.1);
+  --badge-outline: rgba(0, 0, 0, 0.05);
+
+  /* Automatic computation of border around primary / danger buttons */
+  --opaque-button-border-intensity: -8; /* In terms of percentages */
+
+  /* Backgrounds applied on top of other backgrounds when hovered/active */
+  --elevate-1: rgba(0, 0, 0, 0.03);
+  --elevate-2: rgba(0, 0, 0, 0.08);
+
+  --background: 30 9% 84%;
+
+  --foreground: 20 47% 15%;
+
+  --border: 25 30% 62%;
+
+  --card: 34 38% 93%;
+
+  --card-foreground: 20 47% 15%;
+
+  --card-border: 25 35% 55%;
+
+  --sidebar: 140 6% 18%;
+
+  --sidebar-foreground: 45 40% 90%;
+
+  --sidebar-border: 140 5% 30%;
+
+  --sidebar-primary: 24 80% 56%;
+
+  --sidebar-primary-foreground: 20 47% 12%;
+
+  --sidebar-accent: 140 5% 24%;
+
+  --sidebar-accent-foreground: 45 40% 90%;
+
+  --sidebar-ring: 45 80% 70%;
+
+  --popover: 34 38% 93%;
+
+  --popover-foreground: 20 47% 15%;
+
+  --popover-border: 25 35% 55%;
+
+  --primary: 22 79% 52%;
+
+  --primary-foreground: 34 60% 97%;
+
+  --secondary: 210 27% 43%;
+
+  --secondary-foreground: 34 60% 96%;
+
+  --muted: 30 14% 78%;
+
+  --muted-foreground: 22 22% 34%;
+
+  --accent: 45 76% 79%;
+
+  --accent-foreground: 20 47% 15%;
+
+  --destructive: 4 66% 46%;
+
+  --destructive-foreground: 34 60% 97%;
+
+  --input: 25 30% 55%;
+  --ring: 22 79% 52%;
+  --chart-1: 22 79% 52%;
+  --chart-2: 210 27% 43%;
+  --chart-3: 31 47% 54%;
+  --chart-4: 45 76% 79%;
+  --chart-5: 140 6% 22%;
+
+  --app-font-sans: 'Bricolage Grotesque', sans-serif;
+  --app-font-serif: 'Pixelify Sans', monospace;
+  --app-font-mono: 'VT323', monospace;
+  --radius: 0.25rem; /* 8px */
+  --shadow-2xs: 0px 2px 0px 0px hsl(202.8169 89.1213% 53.1373% / 0); /*replace with H S L */
+  --shadow-xs: 0px 2px 0px 0px hsl(202.8169 89.1213% 53.1373% / 0); /*replace with H S L */
+  --shadow-sm:
+    0px 2px 0px 0px hsl(202.8169 89.1213% 53.1373% / 0),
+    0px 1px 2px -1px hsl(202.8169 89.1213% 53.1373% / 0);
+  --shadow:
+    0px 2px 0px 0px hsl(202.8169 89.1213% 53.1373% / 0),
+    0px 1px 2px -1px hsl(202.8169 89.1213% 53.1373% / 0);
+  --shadow-md:
+    0px 2px 0px 0px hsl(202.8169 89.1213% 53.1373% / 0),
+    0px 2px 4px -1px hsl(202.8169 89.1213% 53.1373% / 0);
+  --shadow-lg:
+    0px 2px 0px 0px hsl(202.8169 89.1213% 53.1373% / 0),
+    0px 4px 6px -1px hsl(202.8169 89.1213% 53.1373% / 0);
+  --shadow-xl:
+    0px 2px 0px 0px hsl(202.8169 89.1213% 53.1373% / 0),
+    0px 8px 10px -1px hsl(202.8169 89.1213% 53.1373% / 0);
+  --shadow-2xl: 0px 2px 0px 0px hsl(202.8169 89.1213% 53.1373% / 0);
+  --tracking-normal: 0em;
+  --spacing: 0.25rem;
+
+  /* Automatically computed borders - intensity can be controlled by the user by the --opaque-button-border-intensity setting */
+
+  /* Fallback for older browsers */
+  --sidebar-primary-border: hsl(var(--sidebar-primary));
+  --sidebar-primary-border: hsl(
+    from hsl(var(--sidebar-primary)) h s
+      calc(l + var(--opaque-button-border-intensity)) / alpha
+  );
+
+  /* Fallback for older browsers */
+  --sidebar-accent-border: hsl(var(--sidebar-accent));
+  --sidebar-accent-border: hsl(
+    from hsl(var(--sidebar-accent)) h s
+      calc(l + var(--opaque-button-border-intensity)) / alpha
+  );
+
+  /* Fallback for older browsers */
+  --primary-border: hsl(var(--primary));
+  --primary-border: hsl(
+    from hsl(var(--primary)) h s
+      calc(l + var(--opaque-button-border-intensity)) / alpha
+  );
+
+  /* Fallback for older browsers */
+  --secondary-border: hsl(var(--secondary));
+  --secondary-border: hsl(
+    from hsl(var(--secondary)) h s
+      calc(l + var(--opaque-button-border-intensity)) / alpha
+  );
+
+  /* Fallback for older browsers */
+  --muted-border: hsl(var(--muted));
+  --muted-border: hsl(
+    from hsl(var(--muted)) h s calc(l + var(--opaque-button-border-intensity)) /
+      alpha
+  );
+
+  /* Fallback for older browsers */
+  --accent-border: hsl(var(--accent));
+  --accent-border: hsl(
+    from hsl(var(--accent)) h s
+      calc(l + var(--opaque-button-border-intensity)) / alpha
+  );
+
+  /* Fallback for older browsers */
+  --destructive-border: hsl(var(--destructive));
+  --destructive-border: hsl(
+    from hsl(var(--destructive)) h s
+      calc(l + var(--opaque-button-border-intensity)) / alpha
+  );
+}
+.dark {
+  --button-outline: rgba(255, 255, 255, 0.1);
+  --badge-outline: rgba(255, 255, 255, 0.05);
+
+  --opaque-button-border-intensity: 9; /* In terms of percentages */
+
+  /* Backgrounds applied on top of other backgrounds when hovered/active */
+  --elevate-1: rgba(255, 255, 255, 0.04);
+  --elevate-2: rgba(255, 255, 255, 0.09);
+
+  --background: 30 9% 84%;
+
+  --foreground: 20 47% 15%;
+
+  --border: 25 30% 62%;
+
+  --card: 34 38% 93%;
+
+  --card-foreground: 20 47% 15%;
+
+  --card-border: 25 35% 55%;
+
+  --sidebar: 140 6% 18%;
+
+  --sidebar-foreground: 45 40% 90%;
+
+  --sidebar-border: 140 5% 30%;
+
+  --sidebar-primary: 24 80% 56%;
+
+  --sidebar-primary-foreground: 20 47% 12%;
+
+  --sidebar-accent: 140 5% 24%;
+
+  --sidebar-accent-foreground: 45 40% 90%;
+
+  --sidebar-ring: 45 80% 70%;
+
+  --popover: 34 38% 93%;
+
+  --popover-foreground: 20 47% 15%;
+
+  --popover-border: 25 35% 55%;
+
+  --primary: 22 79% 52%;
+
+  --primary-foreground: 34 60% 97%;
+
+  --secondary: 210 27% 43%;
+
+  --secondary-foreground: 34 60% 96%;
+
+  --muted: 30 14% 78%;
+
+  --muted-foreground: 22 22% 34%;
+
+  --accent: 45 76% 79%;
+
+  --accent-foreground: 20 47% 15%;
+
+  --destructive: 4 66% 46%;
+
+  --destructive-foreground: 34 60% 97%;
+
+  /* Used as the border around inputs. Dark mode: Should be a border that is light enough to have high contrast when rendered on a --card background. More contrast than standard --border */
+  --input: 25 30% 55%;
+  --ring: 22 79% 52%;
+  --chart-1: 22 79% 52%;
+  --chart-2: 210 27% 43%;
+  --chart-3: 31 47% 54%;
+  --chart-4: 45 76% 79%;
+  --chart-5: 140 6% 22%;
+
+  --shadow-2xs: 0px 2px 0px 0px hsl(202.8169 89.1213% 53.1373% / 0);
+  --shadow-xs: 0px 2px 0px 0px hsl(202.8169 89.1213% 53.1373% / 0);
+  --shadow-sm:
+    0px 2px 0px 0px hsl(202.8169 89.1213% 53.1373% / 0),
+    0px 1px 2px -1px hsl(202.8169 89.1213% 53.1373% / 0);
+  --shadow:
+    0px 2px 0px 0px hsl(202.8169 89.1213% 53.1373% / 0),
+    0px 1px 2px -1px hsl(202.8169 89.1213% 53.1373% / 0);
+  --shadow-md:
+    0px 2px 0px 0px hsl(202.8169 89.1213% 53.1373% / 0),
+    0px 2px 4px -1px hsl(202.8169 89.1213% 53.1373% / 0);
+  --shadow-lg:
+    0px 2px 0px 0px hsl(202.8169 89.1213% 53.1373% / 0),
+    0px 4px 6px -1px hsl(202.8169 89.1213% 53.1373% / 0);
+  --shadow-xl:
+    0px 2px 0px 0px hsl(202.8169 89.1213% 53.1373% / 0),
+    0px 8px 10px -1px hsl(202.8169 89.1213% 53.1373% / 0);
+  --shadow-2xl: 0px 2px 0px 0px hsl(202.8169 89.1213% 53.1373% / 0);
+}
+:root{--oak:28 55% 52%;--walnut:20 42% 14%;--ginger:22 79% 52%;--denim:210 27% 43%;--lamp:45 76% 79%;--wall:215 13% 91%;--chalk:140 6% 17%;--chalk-ink:45 30% 90%;}
+.font-pixel{font-family:'Pixelify Sans',monospace}
+.font-chalk{font-family:'VT323',monospace}
+.pixelated{image-rendering:pixelated}
+.px-border{box-shadow:0 0 0 3px hsl(var(--walnut)),4px 4px 0 3px hsl(var(--walnut)/.35)}
+.px-btn{box-shadow:0 0 0 2px hsl(var(--walnut)),3px 3px 0 2px hsl(var(--walnut));transition:transform .08s steps(2),box-shadow .08s steps(2)}
+.px-btn:hover:not(:disabled){transform:translate(-1px,-1px);box-shadow:0 0 0 2px hsl(var(--walnut)),4px 4px 0 2px hsl(var(--walnut))}
+.px-btn:active:not(:disabled){transform:translate(3px,3px);box-shadow:0 0 0 2px hsl(var(--walnut)),0 0 0 2px hsl(var(--walnut))}
+.px-btn:disabled{opacity:.5;cursor:not-allowed}
+:focus-visible{outline:3px dashed hsl(var(--ginger));outline-offset:3px}
+.oak{background:repeating-linear-gradient(90deg,hsl(31 47% 54%) 0 46px,hsl(28 45% 46%) 46px 50px),hsl(var(--oak))}
+.slat{background:hsl(28 52% 58%);box-shadow:0 3px 0 hsl(24 45% 38%)}
+.chalkboard{background:radial-gradient(ellipse at 30% 10%,hsl(140 6% 23%),hsl(var(--chalk)) 70%);color:hsl(var(--chalk-ink));font-family:'VT323',monospace;border-left:10px solid hsl(24 45% 32%)}
+.chalkboard h2,.chalkboard h3{font-family:'Pixelify Sans',monospace}
+.chalkboard button{min-height:44px}
+.chalk-line{border-bottom:2px dashed hsl(var(--chalk-ink)/.3)}
+.chalk-input{background:transparent;border:0;border-bottom:2px solid hsl(var(--chalk-ink)/.5);color:hsl(var(--chalk-ink));font-size:1.35rem;padding:.25rem 0;width:100%}
+.chalk-input:focus{outline:none;border-bottom-color:hsl(var(--lamp))}
+.chalk-input::placeholder{color:hsl(var(--chalk-ink)/.4)}
+
+html,body,#root{height:100%;margin:0;overflow:hidden} .admin-current{height:100dvh;overflow:auto;padding:24px;background:hsl(var(--wall));color:hsl(var(--walnut));font-family:var(--app-font-sans)} .admin-current-controls{display:flex;gap:16px;margin:16px 0}.admin-current .chalkboard{padding:24px;max-width:460px;margin:auto}

@@ -14,3 +14,17 @@ mtime_ms = 1794344275490
 storage_uri = "gcs://replit-rams-assets-spock/rams/assets/repl:3689672a-39b3-4930-814b-5dfa16ae8b52/91737161-c813-4ea7-8e5f-804142d21b78/bf09dcbe-3b94-4128-ad63-ab23c10f5233"
 storage_version_token = "1794344287416021"
 content_type = "image/jpeg"
+
+[[outputs]]
+id = "5a4eyVNDb6olY_ocdnT6b"
+uri = "file://.local/outputs/admin-backend-design.html"
+type = "html"
+title = "Purr & Pour — Admin backend plan"
+description = "Proposed four-status workflow, permissions, manual queue ordering, menu lifecycle, analytics, migration and RabbitMQ/SSE recovery. No backend changes have been applied."
+logical_id = "30af6f08-72d7-4ff3-ac6b-127a7b729b45"
+content_hash = "sha256:32504a8b9f020beaa0901dc4a3a8047f473b57eb0ff41a7b26e4bbd74d4c6775"
+size = 29360
+mtime_ms = 1794352001284
+storage_uri = "gcs://replit-rams-assets-spock/rams/assets/repl:3689672a-39b3-4930-814b-5dfa16ae8b52/30af6f08-72d7-4ff3-ac6b-127a7b729b45/5d46a47f-42aa-4814-b2aa-49e3f093850f"
+storage_version_token = "1794352001956305"
+content_type = "text/html"
