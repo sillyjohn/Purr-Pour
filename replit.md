@@ -47,7 +47,7 @@ Guest ordering, customizable menu/cart, pet preview and interaction, server-owne
 - Preserve the current fonts, pixel button designs, icons, and chalkboard side-drawer styling; the user explicitly approved these.
 - Match the supplied concept closely: white/light-gray background, a silver lamp hanging in the middle, and wooden menu slats. Keep chalkboard styling for side drawers.
 - Use the supplied coffee-station artwork for the fixed bottom-centered counter, extending its wooden floor to both sides. Preserve the artwork's 2.5D perspective rather than a flat front-view counter.
-- The welcome message should look like wall decoration in pixel type: "Welcome [user name]" with "hairy stranger" when no username is available, followed by "What can i do for you".
+- The user chose painted pixel lettering for the wall greeting: "Welcome [user name]" with "hairy stranger" when no username is available, positioned higher on the wall. The barista, not the wall lettering, should say "What can meow do for you today?" in its speech bubble.
 - User requested Java/Spring Boot with Railway as the eventual backend deployment target, RabbitMQ + SSE order updates, account-optional ordering with contact details, role-based access and admin editing on the same page, and Stripe with Apple Pay/Google Pay where supported.
 
 ## Gotchas

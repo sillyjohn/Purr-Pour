@@ -6,6 +6,7 @@ import { money, type MenuCategory, type MenuItem, type Pet } from "./cafe";
 
 export type WelcomeFrameProps = {
   renderDecoration?: (name: string) => ReactNode;
+  greetingSpeech?: string;
 };
 
 const menu: MenuItem[] = [
@@ -29,12 +30,12 @@ type DrawerName = "menu" | "crew" | "tickets" | "cart" | "account" | "settings" 
 const navBtn = "px-btn font-pixel bg-card flex items-center gap-1.5 px-3 py-2 text-sm";
 const fallbackName = "hairy stranger";
 
-export function WelcomeFrame({ renderDecoration }: WelcomeFrameProps) {
+export function WelcomeFrame({ renderDecoration, greetingSpeech }: WelcomeFrameProps) {
   const [drawer, setDrawer] = useState<DrawerName>(null);
   const [category, setCategory] = useState<MenuCategory>("coffee");
   const [name, setName] = useState(fallbackName);
   const [cartCount, setCartCount] = useState(0);
-  const [speech, setSpeech] = useState({ text: "Morning! The lamp's warm and so is the milk.", id: 0 });
+  const [speech, setSpeech] = useState({ text: greetingSpeech ?? "Morning! The lamp's warm and so is the milk.", id: 0 });
   const pet = usePetMachine();
   const reduced = useMemo(() => typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches, []);
   const displayName = name.trim() || fallbackName;
@@ -53,7 +54,7 @@ export function WelcomeFrame({ renderDecoration }: WelcomeFrameProps) {
   };
   const poke = () => {
     pet.send("POKE");
-    say("Scritch accepted.");
+    say(greetingSpeech ?? "Scritch accepted.");
   };
   const addItem = (item: MenuItem) => {
     setCartCount((count) => count + 1);
