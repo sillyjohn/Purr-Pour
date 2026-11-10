@@ -1,7 +1,7 @@
 import { ClipboardList, PawPrint, Plus, ShoppingBag } from "lucide-react";
 import type { MenuItem, Pet } from "@workspace/api-client-react";
 import { PetSprite, SpeechCloud, type PetState } from "@/components/pet-sprite";
-import { money, spriteKind } from "@/lib/cafe";
+import { asset, money, spriteKind } from "@/lib/cafe";
 
 type CafeSceneProps = {
   menu: MenuItem[];
@@ -60,24 +60,9 @@ export function CafeScene({
         <button onClick={onCart} aria-label={`Open tab, ${cartCount} items`} data-testid="scene-cart"><ShoppingBag size={16} /><span className="font-pixel">{cartCount}</span></button>
       </div>
 
+      <div className="cafe-floor" aria-hidden="true" />
       <section className="cafe-station" aria-label="Coffee station and barista">
-        <div className="station-pipe pipe-one" /><div className="station-pipe pipe-two" />
-        <div className="machine">
-          <div className="machine-top"><span /><span /></div>
-          <div className="machine-face">
-            <div className="machine-gauge"><i /></div>
-            <div className="machine-display"><span /><span /></div>
-            <div className="machine-group"><i /><b /></div>
-            <div className="machine-drip"><i /><i /><i /></div>
-          </div>
-          <div className="machine-base" />
-        </div>
-        <div className="grinder"><div className="grinder-hopper" /><div className="grinder-body"><i /><b /></div><div className="grinder-foot" /></div>
-        <div className="pour-over"><div className="pour-top" /><div className="pour-glass"><i /><i /></div><div className="pour-cup" /></div>
-        <div className="supply supply-one"><i /><i /><i /></div>
-        <div className="supply supply-two"><i /><i /></div>
-        <div className="counter-surface" />
-        <div className="counter-front"><span className="counter-sign font-pixel">P &amp; P</span><span className="counter-drawer" /><span className="counter-drawer" /></div>
+        <img className="cafe-station-art" src={asset("/scene/cafe-station-cutout.png")} alt="" aria-hidden="true" />
         <div className="barista-spot">
           <div className="speech-anchor"><SpeechCloud text={speech.text} id={speech.id} /></div>
           {petList.filter((p) => p.id !== pet?.id).slice(0, 1).map((p) => (
@@ -86,11 +71,12 @@ export function CafeScene({
             </button>
           ))}
           <button className="barista-button" onClick={onPoke} onPointerEnter={onWake} aria-label={`Pet ${pet?.name ?? "the barista"}. Currently ${petState}.`} data-testid="button-poke-pet">
-            <PetSprite kind={kind} px={108} state={reduced && petState !== "sleep" ? "idle" : petState} />
+            <span className="barista-visual">
+              <PetSprite kind={kind} px={108} state={reduced && petState !== "sleep" ? "idle" : petState} />
+            </span>
           </button>
           <span className="barista-name font-pixel">{pet?.name ?? "Miso"} <small>on shift</small></span>
         </div>
-        <div className="station-floor"><span /><span /><span /><span /><span /></div>
       </section>
     </main>
   );
