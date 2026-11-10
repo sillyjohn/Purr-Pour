@@ -1,0 +1,161 @@
+.painted-welcome {
+  position: absolute;
+  z-index: 2;
+  top: 12%;
+  left: clamp(20px, 5.2vw, 76px);
+  width: clamp(170px, 21vw, 286px);
+  color: #574d42;
+  pointer-events: none;
+  transform: rotate(-1deg);
+  text-shadow: 1px 1px 0 rgb(255 255 255 / 42%);
+  animation: painted-welcome-settle 480ms ease-out both;
+}
+
+.painted-welcome__mark {
+  display: flex;
+  align-items: end;
+  gap: 3px;
+  width: 27px;
+  height: 15px;
+  margin: 0 0 8px 3px;
+  opacity: .72;
+}
+
+.painted-welcome__mark span {
+  display: block;
+  width: 6px;
+  height: 6px;
+  background: #bd7454;
+}
+
+.painted-welcome__mark span:nth-child(2) {
+  height: 12px;
+  background: #d6a663;
+}
+
+.painted-welcome__mark span:nth-child(3) {
+  height: 9px;
+  background: #77817a;
+}
+
+.painted-welcome__hello {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  column-gap: .28em;
+  row-gap: 0;
+  margin: 0;
+  font-family: "Pixelify Sans", monospace;
+  font-size: clamp(21px, 2.65vw, 36px);
+  font-weight: 700;
+  line-height: 1.04;
+  letter-spacing: -.035em;
+  overflow-wrap: anywhere;
+}
+
+.painted-welcome__welcome {
+  white-space: nowrap;
+}
+
+.painted-welcome__name {
+  color: #986047;
+  overflow-wrap: anywhere;
+}
+
+.painted-welcome__underline {
+  display: block;
+  width: min(88%, 208px);
+  height: 4px;
+  margin: 11px 0 0 3px;
+  background: repeating-linear-gradient(90deg, #b77a58 0 9px, transparent 9px 13px);
+  opacity: .68;
+}
+
+.cafe-playfield:has(.painted-welcome) .speech-anchor {
+  left: calc(100% - 48px);
+}
+
+.cafe-playfield:has(.painted-welcome) .bubble::after {
+  left: calc(50% - 6px);
+}
+
+@keyframes painted-welcome-settle {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@media (max-width: 640px) {
+  .cafe-playfield:has(.painted-welcome) .speech-anchor {
+    left: 50%;
+  }
+
+  .cafe-playfield:has(.painted-welcome) .menu-board {
+    top: 30%;
+  }
+
+  .painted-welcome {
+    top: 18px;
+    left: 8px;
+    width: calc(50% - 50px);
+    max-width: 170px;
+    text-align: left;
+    transform: rotate(-.5deg);
+  }
+
+  .painted-welcome__mark {
+    margin: 0 0 3px 3px;
+  }
+
+  .painted-welcome__hello {
+    justify-content: flex-start;
+    font-size: clamp(18px, 5.4vw, 23px);
+  }
+
+  .painted-welcome__underline {
+    width: 90px;
+    height: 3px;
+    margin: 5px 0 0 3px;
+  }
+}
+
+@media (max-width: 380px) {
+  .cafe-playfield:has(.painted-welcome) .menu-board {
+    top: 32%;
+  }
+
+  .painted-welcome {
+    top: 12px;
+  }
+
+  .painted-welcome__hello {
+    font-size: clamp(18px, 5.4vw, 21px);
+  }
+}
+
+@media (max-height: 620px) and (min-width: 641px) {
+  .cafe-playfield:has(.painted-welcome) .speech-anchor {
+    left: calc(100% - 32px);
+  }
+
+  .painted-welcome {
+    top: 10%;
+    left: 18px;
+    width: 150px;
+  }
+
+  .painted-welcome__hello {
+    font-size: 20px;
+  }
+}
+
+@media (max-width: 640px) and (max-height: 740px) {
+  .cafe-playfield:has(.painted-welcome) .menu-board {
+    top: 24%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .painted-welcome {
+    animation: none;
+  }
+}

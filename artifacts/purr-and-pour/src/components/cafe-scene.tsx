@@ -1,6 +1,7 @@
 import { ClipboardList, PawPrint, Plus, ShoppingBag } from "lucide-react";
 import type { MenuItem, Pet } from "@workspace/api-client-react";
 import { PetSprite, SpeechCloud, type PetState } from "@/components/pet-sprite";
+import { PaintedWelcome } from "@/components/painted-welcome";
 import { asset, money, spriteKind } from "@/lib/cafe";
 
 type CafeSceneProps = {
@@ -13,6 +14,7 @@ type CafeSceneProps = {
   petState: PetState;
   reduced: boolean;
   cartCount: number;
+  welcomeName: string;
   announcement?: string;
   onMenu: () => void;
   onCategory: (category: "coffee" | "tea" | "treats") => void;
@@ -24,7 +26,7 @@ type CafeSceneProps = {
 };
 
 export function CafeScene({
-  menu, loading, pet, petList, unlocked, speech, petState, reduced, cartCount,
+  menu, loading, pet, petList, unlocked, speech, petState, reduced, cartCount, welcomeName,
   onMenu, onCategory, onPets, onOrders, onCart, onPoke, onWake,
 }: CafeSceneProps) {
   const boardItems = menu.slice(0, 10);
@@ -35,6 +37,8 @@ export function CafeScene({
         <div className="wall-lamp"><span /></div>
         <div className="beam" />
       </div>
+
+      <PaintedWelcome name={welcomeName} />
 
       <section className="menu-board" aria-label="Today's menu">
         <div className="board-heading">

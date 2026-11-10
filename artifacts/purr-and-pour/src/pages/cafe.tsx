@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
-import { useAuth } from "@clerk/react";
+import { useAuth, useUser } from "@clerk/react";
 import {
   getGetMeQueryKey,
   getGetOrdersQueryKey,
@@ -20,8 +20,8 @@ import { PetSprite, usePetMachine } from "@/components/pet-sprite";
 import { AccountDrawer, AdminDrawer, CartDrawer, ChalkDrawer, SettingsDrawer, StaffDrawer, type DrawerName } from "@/components/drawers";
 import { CafeScene } from "@/components/cafe-scene";
 import { STATUS_LINES, apiError, asset, basePath, blip, money, spriteKind, type CartLine } from "@/lib/cafe";
+import { BARISTA_GREETING, resolveWelcomeName } from "@/lib/welcome";
 
-const POKES = ["Mrrp! What'll it be?", "Oat milk? Bold choice.", "I only knock over empty cups.", "Pour-over takes four minutes. I counted.", "Scritch accepted.", "Don't tell the corgi, but you're my favorite."];
 const CART_KEY = "purr-pour-cart";
 
 function ErrorBox({ msg, retry }: { msg: string; retry: () => void }) {
@@ -140,6 +140,8 @@ export default function Cafe() {
   const menu = useGetMenu();
   const pets = useGetPets();
   const { userId, isLoaded: authLoaded } = useAuth();
+  const { user } = useUser();
+  const welcomeName = resolveWelcomeName(authLoaded && userId ? user : null);
   const me = useGetMe();
   const orders = useGetOrders();
   const equip = useUpdatePreferences();
@@ -154,7 +156,7 @@ export default function Cafe() {
   const setLines = useCallback((fn: (l: CartLine[]) => CartLine[]) => setLinesState(fn), []);
   useEffect(() => { localStorage.setItem(CART_KEY, JSON.stringify(lines)); }, [lines]);
 
-  const [speech, setSpeech] = useState({ text: "Morning! The lamp's warm and so is the milk.", id: 0 });
+  const [speech, setSpeech] = useState({ text: BARISTA_GREETING, id: 0 });
   const say = useCallback((text: string) => setSpeech((s) => ({ text, id: s.id + 1 })), []);
   const pet = usePetMachine();
   const sendRef = useRef(pet.send);
@@ -185,7 +187,7 @@ export default function Cafe() {
     if (!authLoaded) return;
     statusRef.current.clear();
     setLive("connecting");
-    say("");
+    say(BARISTA_GREETING);
     let es: EventSource | null = null;
     let retry: number | undefined;
     let closed = false;
@@ -233,7 +235,7 @@ export default function Cafe() {
 
   const poke = () => {
     pet.send("POKE");
-    say(POKES[(speech.id + 1) % POKES.length]);
+    say(BARISTA_GREETING);
     if (soundRef.current) blip(880);
   };
 
@@ -302,6 +304,7 @@ export default function Cafe() {
           petState={pet.state}
           reduced={reduced}
           cartCount={cartCount}
+          welcomeName={welcomeName}
           announcement={shop.data?.announcement}
           onMenu={() => setDrawer("menu")}
           onCategory={(category) => { setCat(category); setDrawer("menu"); }}
