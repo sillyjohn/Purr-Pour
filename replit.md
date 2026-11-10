@@ -42,6 +42,7 @@ Guest ordering, customizable menu/cart, pet preview and interaction, server-owne
 ## User preferences
 
 - US coffee shop. Pets unlock through loyalty milestones; incoming orders are managed by staff inside this app rather than an existing POS.
+- Admin order requirements: four statuses, Placed, In progress, Complete, and Cancelled. Complete means ready for pickup, not collected. Customers may cancel only their own placed orders; admins may change an order to any status. Queue scheduling means manual priority ordering only, not preparation times or pickup slots.
 - Single-page consumer experience; settings and checkout use stylized chalkboard side drawers. Most graphics should be pixelized, based on the supplied coffee-counter art and Piskel animations.
 - The main page must not scroll: scale the café scene to the viewport on desktop, iPhones, and mainstream phones, with the coffee station and barista anchored bottom-center and the coffee menu above them.
 - Preserve the current fonts, pixel button designs, icons, and chalkboard side-drawer styling; the user explicitly approved these.
