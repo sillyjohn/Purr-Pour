@@ -3,10 +3,11 @@
   z-index: 2;
   top: 12%;
   left: clamp(20px, 5.2vw, 76px);
-  width: clamp(170px, 21vw, 286px);
+  /* Stop before the centered menu's left edge, including its widest size. */
+  width: min(286px, calc(50cqw - min(280px, 29cqw) - clamp(20px, 5.2vw, 76px) - 24px));
   color: #574d42;
   pointer-events: none;
-  transform: rotate(-1deg);
+  transform: none;
   text-shadow: 1px 1px 0 rgb(255 255 255 / 42%);
   animation: painted-welcome-settle 480ms ease-out both;
 }
@@ -60,6 +61,12 @@
 .painted-welcome__name {
   color: #986047;
   overflow-wrap: anywhere;
+  min-width: 0;
+  max-width: 100%;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
 }
 
 .painted-welcome__underline {
@@ -84,22 +91,25 @@
   to { opacity: 1; }
 }
 
-@media (max-width: 640px) {
+@media (max-width: 900px) {
   .cafe-playfield:has(.painted-welcome) .speech-anchor {
     left: 50%;
   }
 
   .cafe-playfield:has(.painted-welcome) .menu-board {
-    top: 30%;
+    top: 132px;
+    max-height: calc(100% - 148px);
   }
 
   .painted-welcome {
     top: 18px;
     left: 8px;
-    width: calc(50% - 50px);
+    width: calc(50% - 30px);
     max-width: 170px;
+    max-height: 104px;
+    overflow: hidden;
     text-align: left;
-    transform: rotate(-.5deg);
+    transform: none;
   }
 
   .painted-welcome__mark {
@@ -108,7 +118,7 @@
 
   .painted-welcome__hello {
     justify-content: flex-start;
-    font-size: clamp(18px, 5.4vw, 23px);
+    font-size: clamp(18px, 3.4vw, 23px);
   }
 
   .painted-welcome__underline {
@@ -119,10 +129,6 @@
 }
 
 @media (max-width: 380px) {
-  .cafe-playfield:has(.painted-welcome) .menu-board {
-    top: 32%;
-  }
-
   .painted-welcome {
     top: 12px;
   }
@@ -140,17 +146,15 @@
   .painted-welcome {
     top: 10%;
     left: 18px;
-    width: 150px;
+    width: min(150px, calc(50cqw - min(280px, 29cqw) - 38px));
   }
 
   .painted-welcome__hello {
     font-size: 20px;
   }
-}
-
-@media (max-width: 640px) and (max-height: 740px) {
   .cafe-playfield:has(.painted-welcome) .menu-board {
-    top: 24%;
+    top: 8px;
+    max-height: 42%;
   }
 }
 
