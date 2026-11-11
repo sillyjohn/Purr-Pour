@@ -1,1 +1,2 @@
 - [Testing admin roles](testing-admin-roles.md) — programmatic Clerk sign-in does not provision a privileged test account; use a fresh development-only fixture.
+- [Window artwork proportions](window-art-direction.md) — redesign compact geometry instead of compressing the tall window; keep it clear of the counter artwork.

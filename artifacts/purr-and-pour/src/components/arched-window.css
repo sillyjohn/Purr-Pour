@@ -19,6 +19,13 @@
   image-rendering: pixelated;
 }
 
+.arched-window__compact-art {
+  display: none;
+  width: 100%;
+  height: 100%;
+  image-rendering: pixelated;
+}
+
 .window-sky {
   opacity: 0;
 }
@@ -128,7 +135,17 @@
     top: calc(100% - var(--station-width) * .531 + var(--station-width) * .018);
     bottom: auto;
     left: calc(50% - var(--station-width) / 2);
-    height: min(calc(var(--window-size) * 1.4), calc(var(--station-width) * .20));
+    width: min(var(--window-size), calc(var(--station-width) * .20));
+    height: auto;
+    aspect-ratio: 1;
+  }
+
+  .arched-window__art {
+    display: none;
+  }
+
+  .arched-window__compact-art {
+    display: block;
   }
 }
 

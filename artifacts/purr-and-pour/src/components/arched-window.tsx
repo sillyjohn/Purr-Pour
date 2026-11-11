@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { getWindowPhase, getWindowPreviewDate } from "@/lib/window-time";
+import { CompactWindowArt } from "./compact-window-art";
 import "./arched-window.css";
 
 function formatLocalTime(date: Date): string {
@@ -44,7 +45,7 @@ export function ArchedWindow({ reduced = false }: ArchedWindowProps) {
       <svg
         className="arched-window__art"
         viewBox="0 -16 180 300"
-        preserveAspectRatio="none"
+        preserveAspectRatio="xMidYMid meet"
         shapeRendering="crispEdges"
         aria-hidden="true"
       >
@@ -133,6 +134,7 @@ export function ArchedWindow({ reduced = false }: ArchedWindowProps) {
         <path d="M21 80v137M159 80v137" stroke="#bdb5a8" strokeWidth="2" />
         <path d="M24 281h132" stroke="#4f4238" strokeWidth="2" opacity=".32" />
       </svg>
+      <CompactWindowArt />
       <span className="arched-window__glint" aria-hidden="true" />
     </div>
   );
