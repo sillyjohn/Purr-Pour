@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useReducer, useRef, useState, type CSSProperties, type ReactNode } from "react";
+import { useEffect, useMemo, useReducer, useRef, useState, type CSSProperties, type FormEvent, type ReactNode } from "react";
 import { useForm } from "react-hook-form";
 import { Form } from "@/components/ui/form";
 import {
@@ -15,8 +15,10 @@ import {
   type MenuCategory, type MenuItem, type OrderLine, type OrderStatus,
 } from "./_model";
 import "./admin.css";
+import "./AdminPrototype.css";
 
-type View = "orders" | "queue" | "menu" | "analytics" | "customer";
+type View = "orders" | "queue" | "menu" | "analytics" | "customer" | "login" | "structure";
+const DEMO_ADMIN = { email: "manager@purrandpour.demo", password: "miso-after-hours" };
 const NAV: { id: View; label: string; Icon: typeof Coffee }[] = [
   { id: "orders", label: "Orders", Icon: ShoppingBag },
   { id: "queue", label: "Queue", Icon: ListOrdered },
@@ -119,8 +121,13 @@ function AdminPrototype() {
   stateRef.current = state;
   const [view, setView] = useState<View>(() => {
     const requested = new URLSearchParams(window.location.search).get("view");
-    return requested && ["orders", "queue", "menu", "analytics", "customer"].includes(requested) ? requested as View : "orders";
+    return requested === "structure" ? "structure" : "login";
   });
+  const [signedIn, setSignedIn] = useState(false);
+  const [loginEmail, setLoginEmail] = useState("");
+  const [loginPassword, setLoginPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [loginError, setLoginError] = useState("");
   const [toast, setToast] = useState("");
   const [resetOpen, setResetOpen] = useState(false);
   const toastTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -141,18 +148,90 @@ function AdminPrototype() {
       return false;
     }
   };
-  const changeView = (next: View) => setView(next);
+  const changeView = (next: View) => {
+    setView(next);
+    window.history.replaceState(null, "", `${window.location.pathname}?view=${next}`);
+  };
+  const authenticateDemo = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (loginEmail.trim().toLowerCase() !== DEMO_ADMIN.email || loginPassword !== DEMO_ADMIN.password) {
+      setLoginError("That sample sign-in did not match. Use the preview credentials below.");
+      return;
+    }
+    setLoginError("");
+    setLoginPassword("");
+    setSignedIn(true);
+    setView("orders");
+    window.history.replaceState(null, "", `${window.location.pathname}?view=orders`);
+    flash("Demo sign-in accepted · opened /admin/orders");
+  };
 
-  return <div className="admin-prototype">
+  if (view === "structure") {
+    return <SiteStructure onBack={() => changeView(signedIn ? "orders" : "login")} />;
+  }
+
+  if (!signedIn) {
+    return <div className="admin-prototype">
+      <header className="admin-header">
+        <div className="admin-brand"><img className="admin-brand-mark" src="/__mockup/images/welcome-wall/logo.svg" alt="" />
+          <div><div className="admin-brand-name">Purr &amp; Pour</div><div className="admin-brand-sub">NEIGHBORHOOD COFFEE · BACK ROOM</div></div>
+        </div>
+        <span className="admin-flag">Sign-in route concept · demo only</span>
+        <div className="admin-header-spacer" />
+        <span className="admin-shift-label">LOCAL PREVIEW</span>
+        <button type="button" className="admin-reset" onClick={() => changeView("structure")} data-testid="button-site-structure">Site structure</button>
+      </header>
+      <main className="admin-auth-page">
+        <div className="admin-auth-grid">
+          <section className="admin-auth-story" aria-labelledby="backroom-title">
+            <span className="admin-auth-eyebrow">THE BACK ROOM · STAFF ONLY</span>
+            <h1 id="backroom-title" className="admin-view-title">The café runs up front.<br />The shift runs back here.</h1>
+            <p>Orders, queue, menu and today’s numbers — in one little room behind the chalkboard.</p>
+            <div className="admin-auth-route-card"><span className="admin-auth-sprite" aria-hidden="true">M</span>
+              <div><strong>One quiet route.</strong><span>After sign-in, staff land on the live ticket rail.</span></div>
+              <code>/admin/orders</code>
+            </div>
+            <div className="admin-auth-structure-callout"><span className="admin-auth-eyebrow">NEW HERE?</span><span>See how the public café and staff back room fit together.</span>
+              <button type="button" className="admin-btn admin-btn-quiet admin-btn-small" onClick={() => changeView("structure")}>Read the site map <ChevronRight size={14} /></button>
+            </div>
+          </section>
+          <section className="admin-auth-card" aria-labelledby="admin-login-title">
+            <div className="admin-auth-card-top"><span className="admin-auth-eyebrow">STAFF SIGN IN</span><span className="admin-auth-seal">PIXEL<br />GATED</span></div>
+            <h2 id="admin-login-title">Clock in, barista.</h2>
+            <p className="admin-auth-card-subtitle">Use an admin account to enter the staff workspace.</p>
+            <form className="admin-auth-form" onSubmit={authenticateDemo}>
+              <label><span className="admin-label">Admin email</span><input type="email" className="admin-field" autoComplete="username" required value={loginEmail} onChange={(event) => { setLoginEmail(event.target.value); setLoginError(""); }} placeholder="manager@purrandpour.demo" data-testid="input-admin-email" /></label>
+              <label><span className="admin-label">Password</span><span className="admin-auth-password-field"><input type={showPassword ? "text" : "password"} className="admin-field" autoComplete="current-password" required value={loginPassword} onChange={(event) => { setLoginPassword(event.target.value); setLoginError(""); }} placeholder="Your back-room passphrase" data-testid="input-admin-password" /><button type="button" className="admin-auth-eye" aria-label={showPassword ? "Hide password" : "Show password"} onClick={() => setShowPassword(!showPassword)}>{showPassword ? <EyeOff size={16} /> : <Eye size={16} />}</button></span></label>
+              {loginError && <p className="admin-alert" role="alert" data-testid="error-admin-login">{loginError}</p>}
+              <button className="admin-btn admin-btn-hot admin-auth-submit" type="submit" data-testid="button-admin-login"><ShoppingBag size={16} /> Open the back room <ChevronRight size={16} /></button>
+            </form>
+            <div className="admin-demo-credentials">
+              <div><strong>LOCAL PREVIEW ONLY</strong><span>This sample credential is public by design; no real user, server, or role is checked.</span></div>
+              <code>{DEMO_ADMIN.email}<br />{DEMO_ADMIN.password}</code>
+              <button type="button" className="admin-btn admin-btn-quiet admin-btn-small" onClick={() => { setLoginEmail(DEMO_ADMIN.email); setLoginPassword(DEMO_ADMIN.password); setLoginError(""); }} data-testid="button-fill-demo">Fill sample credentials</button>
+            </div>
+            <div className="admin-auth-card-footer"><span>Regular guest?</span><span>Return to the café homepage in the live app.</span></div>
+          </section>
+        </div>
+        <div className="admin-auth-disclosure"><Bell size={14} /><span>Prototype sign-in only · no production authentication · no account or order data accessed</span></div>
+      </main>
+    </div>;
+  }
+
+  return <div className="admin-prototype admin-logged-in">
     <header className="admin-header">
       <div className="admin-brand">
         <img className="admin-brand-mark" src="/__mockup/images/welcome-wall/logo.svg" alt="" />
         <div><div className="admin-brand-name">Purr &amp; Pour</div><div className="admin-brand-sub">NEIGHBORHOOD COFFEE · ADMIN PROTOTYPE</div></div>
       </div>
-      <span className="admin-flag" data-testid="text-prototype-disclosure">Prototype · sample data · simulated updates · no charges</span>
+      <span className="admin-flag" data-testid="text-prototype-disclosure">Demo role · sample data · simulated updates · no charges</span>
       <div className="admin-header-spacer" />
       <span className="admin-shift-label">TUESDAY SHIFT · 12:00–8:00 PM</span>
-      <button type="button" className="admin-reset" onClick={() => setResetOpen(true)} data-testid="button-reset-demo"><RotateCcw size={14} /> Reset demo</button>
+      <div className="admin-header-tools">
+        <button type="button" className="admin-reset admin-header-light" onClick={() => changeView("structure")} data-testid="button-admin-site-structure">Site structure</button>
+        <button type="button" className="admin-reset admin-header-light" onClick={() => { setSignedIn(false); setLoginEmail(""); setLoginPassword(""); changeView("login"); }} data-testid="button-admin-signout">Sign out</button>
+        <button type="button" className="admin-reset admin-header-light" onClick={() => setResetOpen(true)} data-testid="button-reset-demo"><RotateCcw size={14} /> Reset demo</button>
+      </div>
     </header>
     <div className="admin-shell">
       <aside className="admin-sidebar">
@@ -175,7 +254,7 @@ function AdminPrototype() {
           <div className="admin-pet-footnote">The biscuit tin is looking low.</div>
         </div>
       </aside>
-      <main className="admin-main">
+    <main className="admin-main">
         {view === "orders" && <OrdersView state={state} queue={queue} run={run} />}
         {view === "queue" && <QueueView state={state} queue={queue} run={run} />}
         {view === "menu" && <MenuView state={state} run={run} />}
@@ -191,6 +270,52 @@ function AdminPrototype() {
       <p>This clears every simulated order and menu change made during this visit, then brings back the original sample shift.</p>
       <p className="admin-subtle">Refresh also resets this sample shift. No backend, customer account, or payment data is touched.</p>
     </Modal>}
+  </div>;
+}
+
+function SiteStructure({ onBack }: { onBack: () => void }) {
+  return <div className="admin-prototype admin-structure-shell">
+    <header className="admin-header">
+      <div className="admin-brand"><img className="admin-brand-mark" src="/__mockup/images/welcome-wall/logo.svg" alt="" />
+        <div><div className="admin-brand-name">Purr &amp; Pour</div><div className="admin-brand-sub">NEIGHBORHOOD COFFEE · SITE MAP</div></div>
+      </div>
+      <span className="admin-flag">Current storefront + proposed staff route</span><div className="admin-header-spacer" />
+      <button type="button" className="admin-reset" onClick={onBack} data-testid="button-back-from-structure">Return to back room <ChevronRight size={14} /></button>
+    </header>
+    <main className="admin-structure-page">
+      <div className="admin-auth-heading">
+        <div><span className="admin-auth-eyebrow">HOW THE SHOP FITS TOGETHER</span><h1 className="admin-view-title">A small counter, one clear route map.</h1>
+          <p className="admin-view-subtitle">The public café stays on the counter. Staff tools belong behind a separate, role-checked door.</p></div>
+        <span className="admin-pill">Current + proposed</span>
+      </div>
+      <div className="admin-structure-grid">
+        <section className="admin-structure-card" aria-labelledby="current-site-heading">
+          <div className="admin-structure-top"><span className="admin-auth-eyebrow">LIVE ROUTES IN App.tsx</span><span className="admin-structure-tag admin-tag-live">Current website</span></div>
+          <h2 id="current-site-heading">Purr &amp; Pour · customer-facing</h2>
+          <div className="admin-tree">
+            <div className="admin-tree-node admin-tree-root"><code>App.tsx</code><span>Wouter router · ClerkProvider · query cache</span></div>
+            <div className="admin-tree-row"><span className="admin-tree-branch">├──</span><div><code>/</code><b>Cafe</b><small>One café scene · Menu, Tickets, Crew, Cart &amp; Settings drawers · Miso at the counter</small></div></div>
+            <div className="admin-tree-row"><span className="admin-tree-branch">├──</span><div><code>/sign-in</code><b>Customer sign in</b><small>Clerk-hosted flow for regulars</small></div></div>
+            <div className="admin-tree-row"><span className="admin-tree-branch">├──</span><div><code>/sign-up</code><b>Customer sign up</b><small>Create a regular’s account</small></div></div>
+            <div className="admin-tree-row"><span className="admin-tree-branch">└──</span><div><code>fallback</code><b>Not found</b><small>Unknown paths land here today</small></div></div>
+          </div>
+          <div className="admin-structure-footnote">Source files: <code>artifacts/purr-and-pour/src/App.tsx</code>, <code>src/pages/cafe.tsx</code>, <code>src/components/cafe-scene.tsx</code> and <code>src/components/drawers.tsx</code>.</div>
+        </section>
+        <section className="admin-structure-card admin-structure-card-plan" aria-labelledby="planned-admin-heading">
+          <div className="admin-structure-top"><span className="admin-auth-eyebrow">PROPOSED · NOT YET WIRED</span><span className="admin-structure-tag admin-tag-plan">New staff route</span></div>
+          <h2 id="planned-admin-heading">The admin back room</h2>
+          <div className="admin-tree">
+            <div className="admin-tree-node admin-tree-root"><code>/admin</code><span>Signed-in staff identity + server-verified admin role</span></div>
+            <div className="admin-tree-row"><span className="admin-tree-branch">├──</span><div><code>/admin/orders</code><b>Ticket rail</b><small>View tickets · apply the four agreed statuses</small></div></div>
+            <div className="admin-tree-row"><span className="admin-tree-branch">├──</span><div><code>/admin/queue</code><b>Barista priority</b><small>Manually reorder the active queue</small></div></div>
+            <div className="admin-tree-row"><span className="admin-tree-branch">├──</span><div><code>/admin/menu</code><b>Edit Menu</b><small>Items, availability and custom sections</small></div></div>
+            <div className="admin-tree-row"><span className="admin-tree-branch">└──</span><div><code>/admin/analytics</code><b>Shift ledger</b><small>Sale totals, category mix and order timing</small></div></div>
+          </div>
+          <div className="admin-structure-footnote">Planned entry: <code>/admin</code> → Clerk sign-in → server role check → redirect to <code>/admin/orders</code>. Real route and permissions need app/API integration.</div>
+        </section>
+      </div>
+      <div className="admin-structure-notice" role="note"><strong>Security line</strong><span>The credential form here is a local interaction demo. A production role gate must be checked on the server for every admin route and API operation; hiding a link is not authorization.</span></div>
+    </main>
   </div>;
 }
 
