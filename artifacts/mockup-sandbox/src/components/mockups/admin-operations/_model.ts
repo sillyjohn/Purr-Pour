@@ -1,5 +1,5 @@
 export type OrderStatus = "placed" | "inprogress" | "complete" | "cancelled";
-export type MenuCategory = "coffee" | "tea" | "treats";
+export type MenuCategory = { key: string; label: string };
 export type DateRange = "today" | "7days" | "all" | "custom";
 
 export type MenuItem = {
@@ -7,7 +7,7 @@ export type MenuItem = {
   name: string;
   description: string;
   priceCents: number;
-  category: MenuCategory;
+  categoryKey: string;
   available: boolean;
   archived: boolean;
 };
@@ -15,7 +15,8 @@ export type MenuItem = {
 export type OrderLine = {
   menuItemId: string;
   name: string;
-  category: MenuCategory;
+  categoryKey: string;
+  categoryName: string;
   priceCents: number;
   quantity: number;
   temperature: "hot" | "iced";
@@ -44,6 +45,7 @@ export type CafeOrder = {
 };
 
 export type CafeState = {
+  categories: MenuCategory[];
   menu: MenuItem[];
   orders: CafeOrder[];
   queueOrderIds: string[];
@@ -65,6 +67,7 @@ export type CafeAction =
   | { type: "customer-cancel"; orderId: string; customerId: string; expectedStatus: OrderStatus }
   | { type: "move-queue"; orderId: string; direction: -1 | 1 }
   | { type: "place-order"; customerId: string; customerName: string; lines: NewOrderLine[]; notes: string }
+  | { type: "create-menu-category"; name: string }
   | { type: "save-menu-item"; item: MenuItem }
   | { type: "toggle-menu-availability"; itemId: string }
   | { type: "archive-menu-item"; itemId: string }
@@ -73,21 +76,42 @@ export type CafeAction =
 export const DEMO_CLOCK = "2026-11-10T20:00:00.000Z";
 export const DEMO_CUSTOMER_ID = "customer-mira";
 
-const menuSeed: MenuItem[] = [
-  { id: "cloud-latte", name: "Cloud Nine Latte", description: "Silky steamed milk meets our cozy house espresso.", priceCents: 500, category: "coffee", available: true, archived: false },
-  { id: "maple-oat-cortado", name: "Maple Oat Cortado", description: "A little maple, a double shot, and oat milk.", priceCents: 475, category: "coffee", available: true, archived: false },
-  { id: "midnight-mocha", name: "Midnight Mocha", description: "Dark cocoa, espresso, and a soft cap of cream.", priceCents: 575, category: "coffee", available: true, archived: false },
-  { id: "iced-honey-matcha", name: "Iced Honey Matcha", description: "Stone-ground matcha, honey, and cold milk.", priceCents: 550, category: "tea", available: true, archived: false },
-  { id: "porchlight-chai", name: "Porchlight Chai", description: "Black tea steeped with our warm spice blend.", priceCents: 450, category: "tea", available: true, archived: false },
-  { id: "lemon-sugar-cookie", name: "Lemon Sugar Cookie", description: "A bright, buttery cookie from the morning bake.", priceCents: 325, category: "treats", available: true, archived: false },
-  { id: "pixel-brownie", name: "Pixel Brownie", description: "Fudgy middle, crisp edges, sea salt on top.", priceCents: 400, category: "treats", available: false, archived: false },
-  { id: "old-fashioned-drip", name: "Old-Fashioned Drip", description: "Our daily rotating single-origin pot.", priceCents: 325, category: "coffee", available: false, archived: true },
+const categorySeed: MenuCategory[] = [
+  { key: "coffee", label: "Coffee" },
+  { key: "tea", label: "Tea" },
+  { key: "treats", label: "Treats" },
 ];
+
+const menuSeed: MenuItem[] = [
+  { id: "cloud-latte", name: "Cloud Nine Latte", description: "Silky steamed milk meets our cozy house espresso.", priceCents: 500, categoryKey: "coffee", available: true, archived: false },
+  { id: "maple-oat-cortado", name: "Maple Oat Cortado", description: "A little maple, a double shot, and oat milk.", priceCents: 475, categoryKey: "coffee", available: true, archived: false },
+  { id: "midnight-mocha", name: "Midnight Mocha", description: "Dark cocoa, espresso, and a soft cap of cream.", priceCents: 575, categoryKey: "coffee", available: true, archived: false },
+  { id: "iced-honey-matcha", name: "Iced Honey Matcha", description: "Stone-ground matcha, honey, and cold milk.", priceCents: 550, categoryKey: "tea", available: true, archived: false },
+  { id: "porchlight-chai", name: "Porchlight Chai", description: "Black tea steeped with our warm spice blend.", priceCents: 450, categoryKey: "tea", available: true, archived: false },
+  { id: "lemon-sugar-cookie", name: "Lemon Sugar Cookie", description: "A bright, buttery cookie from the morning bake.", priceCents: 325, categoryKey: "treats", available: true, archived: false },
+  { id: "pixel-brownie", name: "Pixel Brownie", description: "Fudgy middle, crisp edges, sea salt on top.", priceCents: 400, categoryKey: "treats", available: false, archived: false },
+  { id: "old-fashioned-drip", name: "Old-Fashioned Drip", description: "Our daily rotating single-origin pot.", priceCents: 325, categoryKey: "coffee", available: false, archived: true },
+];
+
+function normalizedCategoryName(value: string) {
+  return value.trim().normalize("NFKC").toLocaleLowerCase("en-US");
+}
+
+export function createCategoryKey(label: string, categories: MenuCategory[]): string {
+  const base = label.trim().normalize("NFKD").replace(/\p{Diacritic}/gu, "").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") || "section";
+  const used = new Set(categories.map((category) => category.key));
+  let key = base;
+  let suffix = 2;
+  while (used.has(key)) key = `${base}-${suffix++}`;
+  return key;
+}
 
 const line = (menuItemId: string, quantity: number, temperature: OrderLine["temperature"] = "hot", milk: OrderLine["milk"] = "whole", notes = ""): OrderLine => {
   const item = menuSeed.find((entry) => entry.id === menuItemId);
   if (!item) throw new Error(`Unknown sample menu item: ${menuItemId}`);
-  return { menuItemId, name: item.name, category: item.category, priceCents: item.priceCents, quantity, temperature, milk, notes };
+  const category = categorySeed.find((entry) => entry.key === item.categoryKey);
+  if (!category) throw new Error(`Unknown sample menu category: ${item.categoryKey}`);
+  return { menuItemId, name: item.name, categoryKey: category.key, categoryName: category.label, priceCents: item.priceCents, quantity, temperature, milk, notes };
 };
 
 function order(
@@ -120,6 +144,7 @@ export function createInitialState(): CafeState {
     order("ord-096", "0096", "2026-09-22", "21:11", "customer-wren", "Wren", "complete", [line("porchlight-chai", 1), line("cloud-latte", 1)], { updatedAt: "2026-09-22T21:25:00.000Z" }),
   ];
   return {
+    categories: categorySeed.map((category) => ({ ...category })),
     menu: menuSeed.map((item) => ({ ...item })),
     orders,
     queueOrderIds: orders.filter((entry) => entry.status === "placed" || entry.status === "inprogress").sort((a, b) => a.createdAt.localeCompare(b.createdAt)).map((entry) => entry.id),
@@ -137,14 +162,14 @@ export function resetDemo(): CafeState {
   return createInitialState();
 }
 
-export function validateMenuItem(item: MenuItem): string[] {
+export function validateMenuItem(item: MenuItem, categories: MenuCategory[] = categorySeed): string[] {
   const errors: string[] = [];
   if (!item.id.trim()) errors.push("Menu item ID is required.");
   const name = item.name.trim();
   if (!name || name.length > 80) errors.push("Name must be 1–80 characters.");
   if (item.description.length > 250) errors.push("Description must be 250 characters or fewer.");
   if (!Number.isInteger(item.priceCents) || item.priceCents < 50 || item.priceCents > 10000) errors.push("Price must be a whole number of cents from $0.50 to $100.00.");
-  if (!["coffee", "tea", "treats"].includes(item.category)) errors.push("Choose coffee, tea, or treats.");
+  if (!categories.some((category) => category.key === item.categoryKey)) errors.push("Choose a category from this menu.");
   return errors;
 }
 
@@ -182,8 +207,18 @@ function updateStatus(state: CafeState, target: CafeOrder, status: OrderStatus, 
 
 export function cafeReducer(state: CafeState, action: CafeAction): CafeState {
   if (action.type === "reset") return resetDemo();
+  if (action.type === "create-menu-category") {
+    const label = action.name.trim();
+    if (!label || label.length > 30) throw new Error("Section name must be 1–30 characters.");
+    const normalized = normalizedCategoryName(label);
+    if (state.categories.some((category) => normalizedCategoryName(category.label) === normalized)) {
+      throw new Error("That menu category already exists.");
+    }
+    const category = { key: createCategoryKey(label, state.categories), label };
+    return { ...state, categories: [...state.categories, category] };
+  }
   if (action.type === "save-menu-item") {
-    const errors = validateMenuItem(action.item);
+    const errors = validateMenuItem(action.item, state.categories);
     if (errors.length) throw new Error(errors.join(" "));
     const exists = state.menu.some((item) => item.id === action.item.id);
     const menu = exists
@@ -231,7 +266,9 @@ export function cafeReducer(state: CafeState, action: CafeAction): CafeState {
       const item = state.menu.find((entry) => entry.id === requested.menuItemId);
       if (!item || item.archived || !item.available) throw new Error("A selected item is no longer available. Review the menu.");
       if (!Number.isInteger(requested.quantity) || requested.quantity < 1 || requested.quantity > 20) throw new Error("Quantity must be between 1 and 20.");
-      return { menuItemId: item.id, name: item.name, category: item.category, priceCents: item.priceCents, quantity: requested.quantity, temperature: requested.temperature, milk: requested.milk, notes: requested.notes.trim() };
+      const category = state.categories.find((entry) => entry.key === item.categoryKey);
+      if (!category) throw new Error("A selected item's menu category no longer exists.");
+      return { menuItemId: item.id, name: item.name, categoryKey: category.key, categoryName: category.label, priceCents: item.priceCents, quantity: requested.quantity, temperature: requested.temperature, milk: requested.milk, notes: requested.notes.trim() };
     });
     const at = stampFor(state);
     const number = String(state.nextOrderNumber).padStart(4, "0");
@@ -271,8 +308,8 @@ export type AnalyticsResult = {
   orderVolume: number;
   units: number;
   salesCents: number;
-  rankings: { id: string; name: string; category: MenuCategory; units: number; salesCents: number }[];
-  categoryTotals: { category: MenuCategory; units: number; salesCents: number }[];
+  rankings: { id: string; name: string; categoryKey: string; units: number; salesCents: number }[];
+  categoryTotals: { categoryKey: string; categoryName: string; units: number; salesCents: number }[];
   byHour: { hour: string; orders: number }[];
   byDay: { day: string; orders: number }[];
   orderTimes: { orderId: string; number: string; placedAt: string; updatedAt: string; durationMinutes: number; status: OrderStatus }[];
@@ -295,20 +332,17 @@ export function deriveAnalytics(state: CafeState, options: AnalyticsOptions): An
   const eligible = allSales.filter((entry) => within(entry.createdAt));
   const traffic = state.orders.filter((entry) => !entry.practice && within(entry.createdAt));
   const excludedCount = state.orders.filter((entry) => within(entry.createdAt) && !isActualSale(entry)).length;
-  const stats = new Map(state.menu.map((item) => [item.id, { id: item.id, name: item.name, category: item.category, units: 0, salesCents: 0 }]));
-  const categories = new Map<MenuCategory, { category: MenuCategory; units: number; salesCents: number }>([
-    ["coffee", { category: "coffee", units: 0, salesCents: 0 }],
-    ["tea", { category: "tea", units: 0, salesCents: 0 }],
-    ["treats", { category: "treats", units: 0, salesCents: 0 }],
-  ]);
+  const stats = new Map(state.menu.map((item) => [item.id, { id: item.id, name: item.name, categoryKey: item.categoryKey, units: 0, salesCents: 0 }]));
+  const categories = new Map(state.categories.map((category) => [category.key, { categoryKey: category.key, categoryName: category.label, units: 0, salesCents: 0 }]));
   for (const order of eligible) for (const entry of order.lines) {
-    const existing = stats.get(entry.menuItemId) ?? { id: entry.menuItemId, name: entry.name, category: entry.category, units: 0, salesCents: 0 };
+    const existing = stats.get(entry.menuItemId) ?? { id: entry.menuItemId, name: entry.name, categoryKey: entry.categoryKey, units: 0, salesCents: 0 };
     existing.units += entry.quantity;
     existing.salesCents += entry.quantity * entry.priceCents;
     stats.set(entry.menuItemId, existing);
-    const category = categories.get(entry.category)!;
+    const category = categories.get(entry.categoryKey) ?? { categoryKey: entry.categoryKey, categoryName: entry.categoryName, units: 0, salesCents: 0 };
     category.units += entry.quantity;
     category.salesCents += entry.quantity * entry.priceCents;
+    categories.set(entry.categoryKey, category);
   }
   const byHour = Array.from({ length: 24 }, (_, hour) => ({ hour: `${String(hour).padStart(2, "0")}:00`, orders: 0 }));
   const dayCounts = new Map<string, number>();

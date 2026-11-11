@@ -20,13 +20,13 @@ type View = "orders" | "queue" | "menu" | "analytics" | "customer";
 const NAV: { id: View; label: string; Icon: typeof Coffee }[] = [
   { id: "orders", label: "Orders", Icon: ShoppingBag },
   { id: "queue", label: "Queue", Icon: ListOrdered },
-  { id: "menu", label: "Menu board", Icon: MenuIcon },
+  { id: "menu", label: "Edit Menu", Icon: MenuIcon },
   { id: "analytics", label: "Analytics", Icon: BarChart3 },
 ];
 const STATUSES: OrderStatus[] = ["placed", "inprogress", "complete", "cancelled"];
 const STATUS_LABEL: Record<OrderStatus, string> = { placed: "Placed", inprogress: "In progress", complete: "Complete · ready for pickup", cancelled: "Cancelled" };
 const STATUS_SHORT: Record<OrderStatus, string> = { placed: "placed", inprogress: "in progress", complete: "ready", cancelled: "cancelled" };
-const CATEGORY_LABEL: Record<MenuCategory, string> = { coffee: "Coffee", tea: "Tea", treats: "Treats" };
+const labelForCategory = (categoryKey: string, categories: MenuCategory[]) => categories.find((category) => category.key === categoryKey)?.label ?? categoryKey;
 const dateFromDemo = new Intl.DateTimeFormat("en-CA", { timeZone: "America/Los_Angeles", year: "numeric", month: "2-digit", day: "2-digit" }).format(new Date(DEMO_CLOCK));
 const chartColors = { main: "#61A9BD", pale: "#8CCEDE", yellow: "#CED14E", green: "#44986D", pink: "#DD83C9" };
 const numeralStyle: CSSProperties = {
@@ -91,7 +91,7 @@ function OrderLines({ lines, dark = false }: { lines: OrderLine[]; dark?: boolea
   return <ul className={dark ? "admin-order-lines" : ""} style={!dark ? { listStyle: "none", padding: 0, margin: "7px 0", font: "17px 'VT323',monospace" } : undefined}>
     {lines.map((entry, index) => <li key={`${entry.menuItemId}-${index}`} data-testid={`line-order-${entry.menuItemId}-${index}`}>
       <strong>{entry.quantity}× {entry.name}</strong>
-      <span className={dark ? "admin-muted-board" : "admin-subtle"}> · {entry.temperature}{entry.milk !== "none" ? `, ${entry.milk} milk` : ""} · {formatMoney(entry.priceCents)} ea</span>
+      <span className={dark ? "admin-muted-board" : "admin-subtle"}> · {entry.categoryName} · {entry.temperature}{entry.milk !== "none" ? `, ${entry.milk} milk` : ""} · {formatMoney(entry.priceCents)} ea</span>
       {entry.notes && <span className={dark ? "admin-muted-board" : "admin-subtle"}> · note: {entry.notes}</span>}
     </li>)}
   </ul>;
@@ -291,22 +291,39 @@ function MenuView({ state, run }: {
   const [editing, setEditing] = useState<MenuItem | "new" | null>(null);
   const [archiveTarget, setArchiveTarget] = useState<MenuItem | null>(null);
   const [showArchived, setShowArchived] = useState(false);
+  const [categoryDialogOpen, setCategoryDialogOpen] = useState(false);
+  const [categoryDraft, setCategoryDraft] = useState("");
+  const [categoryError, setCategoryError] = useState("");
   const shown = state.menu.filter((item) => showArchived || !item.archived);
+  const categories = state.categories;
+  const addCategory = () => {
+    if (!categoryDraft.trim()) { setCategoryError("Enter a section name."); return; }
+    if (run({ type: "create-menu-category", name: categoryDraft }, `${categoryDraft.trim()} section added.`)) {
+      setCategoryDialogOpen(false);
+      setCategoryDraft("");
+      setCategoryError("");
+    } else setCategoryError("That section already exists or the name is too long.");
+  };
+  const saveMenuItem = (item: MenuItem) => {
+    if (run({ type: "save-menu-item", item }, `${item.name} saved to the chalkboard.`)) setEditing(null);
+  };
   return <>
     <div className="admin-view-head">
       <div><h1 className="admin-view-title">Chalkboard specials</h1><p className="admin-view-subtitle">A small board of neighborhood favorites. Changes show up at the guest window.</p></div>
-      <button className="admin-btn admin-btn-hot" type="button" onClick={() => setEditing("new")} data-testid="button-add-menu-item"><PackagePlus size={16} /> Add a menu item</button>
+      <div style={{display:"flex",gap:7,flexWrap:"wrap",justifyContent:"flex-end"}}><button className="admin-btn admin-btn-quiet" type="button" onClick={() => {setCategoryDraft("");setCategoryError("");setCategoryDialogOpen(true);}} data-testid="button-add-menu-category"><Plus size={16} /> Add category</button><button className="admin-btn admin-btn-hot" type="button" onClick={() => setEditing("new")} data-testid="button-add-menu-item"><PackagePlus size={16} /> Add a menu item</button></div>
     </div>
     <div className="admin-content">
       <div className="admin-toolbar">
         <span className="admin-pill"><Coffee size={14} /> {state.menu.filter((item) => !item.archived && item.available).length} available now</span>
         <button className="admin-btn admin-btn-quiet admin-btn-small" type="button" onClick={() => setShowArchived(!showArchived)} aria-pressed={showArchived} data-testid="toggle-archived-items">{showArchived ? <EyeOff size={14} /> : <Eye size={14} />}{showArchived ? "Hide archive" : "Show archive"}</button>
-        <span className="admin-subtle">Archived items remain attached to old tickets.</span>
+        <span className="admin-subtle">Archived items stay attached to old tickets.</span>
       </div>
       <div className="admin-grid-two">
-        {(["coffee", "tea", "treats"] as MenuCategory[]).map((category) => <section className="admin-board" key={category} aria-label={`${CATEGORY_LABEL[category]} menu`}>
-          <div style={{ padding: "10px 12px", borderBottom: "1px dashed rgba(225,225,204,.34)", display: "flex", justifyContent: "space-between", alignItems: "center" }}><h2 className="admin-board-title" style={{ margin: 0 }}>{CATEGORY_LABEL[category]}</h2><span className="admin-tag">{shown.filter((item) => item.category === category).length} on board</span></div>
-          {shown.filter((item) => item.category === category).map((item) => <div className="admin-menu-row" key={item.id} data-testid={`row-menu-${item.id}`}>
+        {categories.map((category) => {
+          const categoryItems = shown.filter((item) => item.categoryKey === category.key);
+          return <section className="admin-board" key={category.key} aria-label={`${category.label} menu`} data-testid={`category-menu-${category.key}`}>
+          <div style={{ padding: "10px 12px", borderBottom: "1px dashed rgba(225,225,204,.34)", display: "flex", justifyContent: "space-between", alignItems: "center" }}><h2 className="admin-board-title" style={{ margin: 0 }}>{category.label}</h2><span className="admin-tag">{categoryItems.length} on board</span></div>
+          {categoryItems.length ? categoryItems.map((item) => <div className="admin-menu-row" key={item.id} data-testid={`row-menu-${item.id}`}>
             <div>
             <div className="admin-menu-name">{item.name}<PixelNumber style={{ marginLeft: 9, color: "#e8d99b", fontSize: 21 }}>{formatMoney(item.priceCents)}</PixelNumber></div>
               <div className="admin-menu-description">{item.description || "A little something from the counter."}</div>
@@ -317,31 +334,36 @@ function MenuView({ state, run }: {
               <button className="admin-btn admin-btn-quiet admin-btn-small" type="button" aria-label={`Edit ${item.name}`} onClick={() => setEditing(item)} data-testid={`button-edit-menu-${item.id}`}><Pencil size={14} /> Edit</button>
               {!item.archived && <button className="admin-btn admin-btn-danger admin-btn-small" type="button" aria-label={`Archive ${item.name}`} onClick={() => setArchiveTarget(item)} data-testid={`button-archive-menu-${item.id}`}><Archive size={14} /> Archive</button>}
             </div>
-          </div>)}
-        </section>)}
+          </div>) : <p className="admin-subtle" style={{padding:"12px",margin:0}}>No items here yet. Add a menu item and choose this section.</p>}
+        </section>})}
       </div>
     </div>
-    {editing && <MenuEditor item={editing === "new" ? null : editing} onClose={() => setEditing(null)} onSave={(item) => { if (run({ type: "save-menu-item", item }, `${item.name} saved to the chalkboard.`)) setEditing(null); }} />}
+    {editing && <MenuEditor item={editing === "new" ? null : editing} categories={categories} onClose={() => setEditing(null)} onSave={saveMenuItem} />}
+    {categoryDialogOpen && <Modal title="Add a chalkboard section" onClose={() => setCategoryDialogOpen(false)} testId="dialog-add-menu-category" actions={<><button className="admin-btn admin-btn-quiet" onClick={() => setCategoryDialogOpen(false)} data-testid="button-menu-category-cancel">Keep the board</button><button className="admin-btn admin-btn-hot" type="button" onClick={addCategory} data-testid="button-menu-category-save"><Check size={15} /> Add section</button></>}>
+      <p>Add a section to organize menu items. You can assign it when adding or editing an item.</p>
+      <label><span className="admin-label">Section name · {categoryDraft.length}/30</span><input className="admin-field" maxLength={30} value={categoryDraft} onChange={(event)=>{setCategoryDraft(event.target.value);setCategoryError("");}} placeholder="Seasonal, bakery, or something new" data-testid="input-menu-category-name" /></label>
+      {categoryError && <div role="alert" className="admin-alert" data-testid="error-menu-category">{categoryError}</div>}
+    </Modal>}
     {archiveTarget && <Modal title={`Take ${archiveTarget.name} off the board?`} onClose={() => setArchiveTarget(null)} testId="dialog-archive-item" actions={<><button className="admin-btn admin-btn-quiet" onClick={() => setArchiveTarget(null)} data-testid="button-archive-keep">Keep it</button><button className="admin-btn admin-btn-danger" onClick={() => { run({ type: "archive-menu-item", itemId: archiveTarget.id }, `${archiveTarget.name} archived. Past tickets keep their original line.`); setArchiveTarget(null); }} data-testid="button-archive-confirm"><Archive size={15} /> Archive item</button></>}>
       <p>This removes it from the guest menu, but does not delete it. Past order lines and prices stay unchanged.</p>
     </Modal>}
   </>;
 }
 
-function MenuEditor({ item, onClose, onSave }: { item: MenuItem | null; onClose: () => void; onSave: (item: MenuItem) => void }) {
-  const form = useForm<{name: string; description: string; price: string; category: MenuCategory; available: boolean}>({
-    defaultValues: {name: item?.name ?? "", description: item?.description ?? "", price: item ? (item.priceCents / 100).toFixed(2) : "", category: item?.category ?? "coffee", available: item?.available ?? true},
+function MenuEditor({ item, categories, onClose, onSave }: { item: MenuItem | null; categories: MenuCategory[]; onClose: () => void; onSave: (item: MenuItem) => void }) {
+  const form = useForm<{name: string; description: string; price: string; categoryKey: string; available: boolean}>({
+    defaultValues: {name: item?.name ?? "", description: item?.description ?? "", price: item ? (item.priceCents / 100).toFixed(2) : "", categoryKey: item?.categoryKey ?? categories[0]?.key ?? "", available: item?.available ?? true},
   });
-  const {name, description, price, category, available} = form.watch();
+  const {name, description, price, categoryKey, available} = form.watch();
   const setName = (value: string) => form.setValue("name", value);
   const setDescription = (value: string) => form.setValue("description", value);
   const setPrice = (value: string) => form.setValue("price", value);
-  const setCategory = (value: MenuCategory) => form.setValue("category", value);
+  const setCategory = (value: string) => form.setValue("categoryKey", value);
   const setAvailable = (value: boolean) => form.setValue("available", value);
   const [error, setError] = useState("");
   const save = () => {
     const cents = parsePriceToCents(price);
-    const draft: MenuItem = { id: item?.id ?? `menu-${name.trim().toLowerCase().replace(/[^a-z0-9]+/g, "-")}-${Date.now().toString(36)}`, name, description, priceCents: cents ?? -1, category, available, archived: item?.archived ?? false };
+    const draft: MenuItem = { id: item?.id ?? `menu-${name.trim().toLowerCase().replace(/[^a-z0-9]+/g, "-")}-${Date.now().toString(36)}`, name, description, priceCents: cents ?? -1, categoryKey, available, archived: item?.archived ?? false };
     const errors = [];
     if (!name.trim() || name.trim().length > 80) errors.push("Name must be 1–80 characters.");
     if (description.length > 250) errors.push("Description must be 250 characters or fewer.");
@@ -355,7 +377,7 @@ function MenuEditor({ item, onClose, onSave }: { item: MenuItem | null; onClose:
       <label><span className="admin-label">Description · {description.length}/250</span><textarea className="admin-field" rows={2} maxLength={250} value={description} onChange={(event) => { setDescription(event.target.value); setError(""); }} data-testid="input-menu-description" /></label>
       <div className="admin-modal-grid">
         <label><span className="admin-label">Price · dollars</span><input className="admin-field" inputMode="decimal" placeholder="4.75" value={price} onChange={(event) => { setPrice(event.target.value); setError(""); }} data-testid="input-menu-price" /><span className="admin-subtle">Whole cents · $0.50–$100.00</span></label>
-        <label><span className="admin-label">Section</span><select className="admin-field" value={category} onChange={(event) => setCategory(event.target.value as MenuCategory)} data-testid="select-menu-category">{(["coffee", "tea", "treats"] as const).map((value) => <option key={value} value={value}>{CATEGORY_LABEL[value]}</option>)}</select></label>
+        <label><span className="admin-label">Section</span><select className="admin-field" value={categoryKey} onChange={(event) => setCategory(event.target.value)} data-testid="select-menu-category">{categories.map((value) => <option key={value.key} value={value.key}>{value.label}</option>)}</select></label>
       </div>
       <button type="button" role="switch" aria-checked={available} className="admin-btn admin-btn-quiet" style={{ justifySelf: "start" }} onClick={() => setAvailable(!available)} data-testid="toggle-menu-editor-available">{available ? "Available at the guest window" : "86'd for now"}</button>
       {error && <div role="alert" className="admin-alert" data-testid="error-menu-validation">{error}</div>}
@@ -410,12 +432,12 @@ function AnalyticsView({ state }: { state: ReturnType<typeof createInitialState>
         </section>
         <section className="admin-chart-card">
           <h3>By section</h3><div className="admin-chart-caption">Units sold · category totals by actual sales</div>
-          <div className="admin-chart" data-testid="chart-category-totals"><ResponsiveContainer width="100%" height="100%"><BarChart data={analytics.categoryTotals.map((entry) => ({ ...entry, category: CATEGORY_LABEL[entry.category] }))} margin={{ top: 10, right: 12, bottom: 3, left: -14 }}>
-            <CartesianGrid strokeDasharray="3 4" vertical={false} stroke="#c9bea9" /><XAxis type="category" dataKey="category" tick={{ fill: "#514432", fontSize: 12 }} /><YAxis type="number" allowDecimals={false} domain={[0, "dataMax"]} tick={{ fill: "#635541", fontSize: 16, fontFamily: "'VT323', monospace" }} />
+          <div className="admin-chart" data-testid="chart-category-totals"><ResponsiveContainer width="100%" height="100%"><BarChart data={analytics.categoryTotals} margin={{ top: 10, right: 12, bottom: 3, left: -14 }}>
+            <CartesianGrid strokeDasharray="3 4" vertical={false} stroke="#c9bea9" /><XAxis type="category" dataKey="categoryName" tick={{ fill: "#514432", fontSize: 12 }} /><YAxis type="number" allowDecimals={false} domain={[0, "dataMax"]} tick={{ fill: "#635541", fontSize: 16, fontFamily: "'VT323', monospace" }} />
             <Tooltip formatter={(value) => [`${value ?? 0} units`, "Quantity"]} contentStyle={{ background: "#f6efdf", border: "1px solid #87785f", fontFamily: "'VT323',monospace" }} />
             <Bar dataKey="units" name="Units" fill={chartColors.main} barSize={35}><LabelList dataKey="units" position="top" fontFamily="'VT323', monospace" fontSize={16} /></Bar>
           </BarChart></ResponsiveContainer></div>
-          <div className="admin-subtle" style={{ display: "flex", justifyContent: "space-around" }}>{analytics.categoryTotals.map((entry) => <span key={entry.category}>{CATEGORY_LABEL[entry.category]} · {entry.units} units · {formatMoney(entry.salesCents)}</span>)}</div>
+          <div className="admin-subtle" style={{ display: "flex", justifyContent: "space-around", flexWrap: "wrap", gap: 4 }}>{analytics.categoryTotals.map((entry) => <span key={entry.categoryKey}>{entry.categoryName} · {entry.units} units · {formatMoney(entry.salesCents)}</span>)}</div>
         </section>
         <section className="admin-chart-card">
           <h3>When cups land</h3><div className="admin-chart-caption">All non-practice orders by hour · includes unpaid/cancelled · LA time</div>
@@ -496,9 +518,9 @@ function CustomerView({ state, run, flash }: {
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline" }}><h2 className="admin-board-title" style={{ margin: 0 }}>Today at Purr &amp; Pour</h2><span className="admin-muted-board">Local favorites, made kindly</span></div>
         </div>
         <div className="admin-board admin-customer-scroll">
-          {(["coffee", "tea", "treats"] as MenuCategory[]).map((category) => <div key={category}>
-            <div style={{ padding: "9px 11px 5px", font: "17px 'Pixelify Sans',monospace", color: "#e8d692" }}>{CATEGORY_LABEL[category]}</div>
-            {available.filter((item) => item.category === category).map((item) => <div className="admin-menu-row" key={item.id} data-testid={`customer-menu-item-${item.id}`}>
+          {state.categories.map((category) => <div key={category.key}>
+            <div style={{ padding: "9px 11px 5px", font: "17px 'Pixelify Sans',monospace", color: "#e8d692" }}>{category.label}</div>
+            {available.filter((item) => item.categoryKey === category.key).map((item) => <div className="admin-menu-row" key={item.id} data-testid={`customer-menu-item-${item.id}`}>
               <div><div className="admin-menu-name">{item.name}<PixelNumber style={{ marginLeft: 7, color: "#e8d99b", fontSize: 21 }}>{formatMoney(item.priceCents)}</PixelNumber></div><div className="admin-menu-description">{item.description}</div></div>
               <button className="admin-btn admin-btn-dark admin-btn-small" type="button" aria-label={`Add ${item.name} to tray`} onClick={() => addItem(item.id)} data-testid={`button-customer-add-${item.id}`}><Plus size={15} /> Add</button>
             </div>)}

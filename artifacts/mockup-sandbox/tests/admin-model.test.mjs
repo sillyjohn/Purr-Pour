@@ -99,10 +99,10 @@ test("placement rejects empty carts, unavailable items and invalid quantities", 
 test("menu supports create, edit, availability and archive while preserving order snapshots", () => {
   const initial = createInitialState();
   const originalLines = JSON.stringify(initial.orders.flatMap(order => order.lines));
-  const item = {...initial.menu[0], id: "new-tea", name: " New Tea ", category: "tea", priceCents: 650};
+  const item = {...initial.menu[0], id: "new-tea", name: " New Tea ", categoryKey: "tea", priceCents: 650};
   let next = cafeReducer(initial, {type: "save-menu-item", item});
   assert.equal(next.menu.find(entry => entry.id === item.id).name, "New Tea");
-  next = cafeReducer(next, {type: "save-menu-item", item: {...next.menu[0], name: "Renamed", category: "treats", priceCents: 900}});
+  next = cafeReducer(next, {type: "save-menu-item", item: {...next.menu.find(entry => entry.id === "new-tea"), name: "Renamed", categoryKey: "treats", priceCents: 900}});
   next = cafeReducer(next, {type: "toggle-menu-availability", itemId: "new-tea"});
   assert.equal(next.menu.find(entry => entry.id === "new-tea").available, false);
   next = cafeReducer(next, {type: "archive-menu-item", itemId: "cloud-latte"});
@@ -110,7 +110,7 @@ test("menu supports create, edit, availability and archive while preserving orde
   assert.equal(next.menu.find(entry => entry.id === "cloud-latte").available, false);
   assert.equal(JSON.stringify(next.orders.flatMap(order => order.lines)), originalLines);
   assert.equal(deriveAnalytics(next, {range: "all"}).salesCents, 8775);
-  assert.equal(deriveAnalytics(next, {range: "all"}).categoryTotals.find(entry => entry.category === "coffee").units, deriveAnalytics(initial, {range: "all"}).categoryTotals.find(entry => entry.category === "coffee").units);
+  assert.equal(deriveAnalytics(next, {range: "all"}).categoryTotals.find(entry => entry.categoryKey === "coffee").units, deriveAnalytics(initial, {range: "all"}).categoryTotals.find(entry => entry.categoryKey === "coffee").units);
 });
 
 test("price parsing rejects blank, nonnumeric, nonfinite and sub-cent entries", () => {
@@ -119,10 +119,60 @@ test("price parsing rejects blank, nonnumeric, nonfinite and sub-cent entries", 
   assert.equal(parsePriceToCents("0.50"), 50);
   assert.equal(parsePriceToCents("100.00"), 10000);
   const base = createInitialState().menu[0];
-  for (const patch of [{name: " "}, {name: "x".repeat(81)}, {priceCents: 49}, {priceCents: 10001}, {priceCents: 500.5}, {priceCents: Infinity}, {category: "unknown"}, {description: "x".repeat(251)}]) {
+  for (const patch of [{name: " "}, {name: "x".repeat(81)}, {priceCents: 49}, {priceCents: 10001}, {priceCents: 500.5}, {priceCents: Infinity}, {categoryKey: "unknown"}, {description: "x".repeat(251)}]) {
     assert.ok(validateMenuItem({...base, ...patch}).length > 0);
     assert.throws(() => cafeReducer(createInitialState(), {type: "save-menu-item", item: {...base, ...patch}}));
   }
+});
+
+test("staff-created categories have stable keys and reject case-insensitive duplicates", () => {
+  let state = cafeReducer(createInitialState(), {type: "create-menu-category", name: "  Bakery & Bakes  "});
+  const bakery = state.categories.find(category => category.label === "Bakery & Bakes");
+  assert.deepEqual(bakery, {key: "bakery-bakes", label: "Bakery & Bakes"});
+  assert.throws(() => cafeReducer(state, {type: "create-menu-category", name: " bAKERY & BAKES "}), /already exists/);
+  assert.throws(() => cafeReducer(state, {type: "create-menu-category", name: " coffee "}), /already exists/);
+  assert.throws(() => cafeReducer(state, {type: "create-menu-category", name: ""}), /1–30/);
+  assert.throws(() => cafeReducer(state, {type: "create-menu-category", name: "x".repeat(31)}), /1–30/);
+  state = cafeReducer(state, {type: "create-menu-category", name: "Bakery Bakes"});
+  assert.equal(state.categories.filter(category => category.key.startsWith("bakery-bakes")).length, 2);
+  assert.notEqual(state.categories.at(-1).key, bakery.key);
+});
+
+test("reset restores the built-in category list and removes custom categories", () => {
+  const state = cafeReducer(createInitialState(), {type: "create-menu-category", name: "Seasonal"});
+  assert.ok(state.categories.some(category => category.key === "seasonal"));
+  const reset = cafeReducer(state, {type: "reset"});
+  assert.deepEqual(reset.categories.map(category => category.key), ["coffee", "tea", "treats"]);
+  assert.ok(!reset.categories.some(category => category.key === "seasonal"));
+});
+
+test("order lines keep category snapshots across recategorization and analytics follows those keys", () => {
+  let state = cafeReducer(createInitialState(), {type: "create-menu-category", name: "Bakery"});
+  const bakery = state.categories.find(category => category.label === "Bakery");
+  const bakedItem = {
+    id: "cardamom-cookie", name: "Cardamom Cookie", description: "Warm spice and a crisp edge.",
+    priceCents: 350, categoryKey: bakery.key, available: true, archived: false,
+  };
+  state = cafeReducer(state, {type: "save-menu-item", item: bakedItem});
+  const orderInput = {customerId: DEMO_CUSTOMER_ID, customerName: "Mira", lines: [{menuItemId: bakedItem.id, quantity: 2, temperature: "hot", milk: "none", notes: ""}], notes: ""};
+  state = cafeReducer(state, {type: "place-order", ...orderInput});
+  const firstOrderId = state.orders[0].id;
+  const originalSnapshot = state.orders[0].lines[0];
+  assert.deepEqual([originalSnapshot.categoryKey, originalSnapshot.categoryName], ["bakery", "Bakery"]);
+
+  state = cafeReducer(state, {type: "save-menu-item", item: {...bakedItem, categoryKey: "treats"}});
+  assert.equal(state.menu.find(item => item.id === bakedItem.id).categoryKey, "treats");
+  assert.deepEqual(state.orders.find(order => order.id === firstOrderId).lines[0], originalSnapshot);
+
+  state = cafeReducer(state, {type: "place-order", ...orderInput});
+  const secondOrderId = state.orders[0].id;
+  assert.deepEqual([state.orders[0].lines[0].categoryKey, state.orders[0].lines[0].categoryName], ["treats", "Treats"]);
+  const saleIds = new Set([firstOrderId, secondOrderId]);
+  state = {...state, orders: state.orders.map(order => saleIds.has(order.id) ? {...order, practice: false, paid: true} : order)};
+  const analytics = deriveAnalytics(state, {range: "all"});
+  assert.equal(analytics.categoryTotals.find(entry => entry.categoryKey === "bakery").units, 2);
+  assert.equal(analytics.categoryTotals.find(entry => entry.categoryKey === "bakery").salesCents, 700);
+  assert.equal(analytics.categoryTotals.find(entry => entry.categoryKey === "treats").units, 6);
 });
 
 test("sales quantities, order volume and exclusions have known independent totals", () => {
