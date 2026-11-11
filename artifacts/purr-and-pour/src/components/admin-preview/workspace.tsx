@@ -1,6 +1,6 @@
 import {useEffect, useMemo, useReducer, useRef, useState} from "react";
 import {Link, useLocation} from "wouter";
-import {Eye, RotateCcw, Sparkles} from "lucide-react";
+import {Coffee, Eye, RotateCcw, Sparkles} from "lucide-react";
 import {asset} from "@/lib/cafe";
 import {cafeReducer, createInitialState} from "./demo-model";
 import {NAV, getQueue, Modal, PixelNumber, OrdersView, QueueView, MenuView, AnalyticsView, CustomerView, type View} from "./preview-views";
@@ -57,6 +57,7 @@ export default function AdminWorkspace({view, onSignOut}: {view: View; onSignOut
         <nav className="admin-nav" aria-label="Café operations">
           {NAV.map(({ id, label, Icon }) => <button key={id} type="button" aria-current={view === id ? "page" : undefined} onClick={() => changeView(id)} data-testid={`nav-${id}`}><Icon />{label}{id === "queue" && <PixelNumber className="admin-count" style={{ marginLeft: "auto", fontSize: 17 }}>{queue.length}</PixelNumber>}</button>)}
           <button type="button" aria-current={view === "customer" ? "page" : undefined} onClick={() => changeView("customer")} data-testid="nav-customer"><Eye />Guest window</button>
+          <Link href="/" target="_blank" rel="noopener noreferrer" title="Open the live café in a new tab. Sample menu edits stay in Guest window." aria-label="View café (opens in a new tab)" data-testid="nav-view-cafe"><Coffee />View café ↗</Link>
         </nav>
         <div className="admin-sidebar-bottom">
           <div className="admin-pet-staff">
@@ -82,6 +83,7 @@ export default function AdminWorkspace({view, onSignOut}: {view: View; onSignOut
     </div>
     <nav className="admin-mobile-tabs" aria-label="Café views">
       {([...NAV, { id: "customer" as View, label: "Guest", Icon: Eye }]).map(({ id, label, Icon }) => <button key={id} type="button" aria-current={view === id ? "page" : undefined} onClick={() => changeView(id)} data-testid={`mobile-nav-${id}`}><Icon /><span>{label}</span></button>)}
+      <Link href="/" target="_blank" rel="noopener noreferrer" aria-label="View café (opens in a new tab)" data-testid="mobile-nav-view-cafe"><Coffee /><span>Café ↗</span></Link>
     </nav>
     {toast && <div className="admin-toast" role="status" aria-live="polite" data-testid="status-feedback">{toast}</div>}
     {resetOpen && <Modal title="Reset this shift?" onClose={() => setResetOpen(false)} testId="dialog-reset-demo" actions={<><button className="admin-btn admin-btn-quiet" onClick={() => setResetOpen(false)} data-testid="button-reset-keep">Keep working</button><button className="admin-btn admin-btn-hot" onClick={() => { dispatch({ type: "reset" }); setResetOpen(false); flash("Demo reset. Sample café restored."); }} data-testid="button-reset-confirm">Reset sample café</button></>}>
