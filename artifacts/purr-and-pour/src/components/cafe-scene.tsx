@@ -69,7 +69,7 @@ export function CafeScene({
             <li key={item.id}>
               <button onClick={() => onCategory(item.category)} className="board-item font-pixel" data-testid={`button-slat-${item.id}`}>
                 <span className={item.available ? "" : "line-through opacity-55"}>{item.name}</span>
-                <span>{money(item.priceCents)}</span>
+                <span className="font-number text-[1.25em]">{money(item.priceCents)}</span>
               </button>
             </li>
           ))}
@@ -80,7 +80,7 @@ export function CafeScene({
           <button id="scene-menu" onClick={onMenu} aria-label="Browse menu" data-testid="scene-menu"><Plus size={16} /><span className="font-pixel">Menu</span></button>
         <button onClick={onPets} aria-label="Meet the crew" data-testid="scene-pets"><PawPrint size={16} /><span className="font-pixel">Crew</span></button>
         <button onClick={onOrders} aria-label="Your tickets" data-testid="scene-orders"><ClipboardList size={16} /><span className="font-pixel">Tickets</span></button>
-        <button onClick={onCart} aria-label={`Open tab, ${cartCount} items`} data-testid="scene-cart"><ShoppingBag size={16} /><span className="font-pixel">{cartCount}</span></button>
+        <button onClick={onCart} aria-label={`Open tab, ${cartCount} items`} data-testid="scene-cart"><ShoppingBag size={16} /><span className="font-number text-xl">{cartCount}</span></button>
       </div>
 
       <div className="cafe-floor" aria-hidden="true" />

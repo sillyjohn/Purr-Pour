@@ -530,6 +530,7 @@ button{touch-action:manipulation}
 body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:60;opacity:.07;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence baseFrequency='.9'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)'/%3E%3C/svg%3E");}
 .font-pixel{font-family:'Pixelify Sans',monospace}
 .font-chalk{font-family:'VT323',monospace}
+.font-number{font-family:'VT323',monospace;font-variant-numeric:tabular-nums;font-weight:400;letter-spacing:0}
 .pixelated{image-rendering:pixelated}
 .px-border{box-shadow:0 0 0 3px hsl(var(--walnut)),4px 4px 0 3px hsl(var(--walnut)/.35)}
 .px-btn{box-shadow:0 0 0 2px hsl(var(--walnut)),3px 3px 0 2px hsl(var(--walnut));transition:transform .08s steps(2),box-shadow .08s steps(2)}
@@ -540,6 +541,8 @@ body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:60;op
 .oak{background:repeating-linear-gradient(90deg,hsl(31 47% 54%) 0 46px,hsl(28 45% 46%) 46px 50px),hsl(var(--oak))}
 .slat{background:hsl(28 52% 58%);box-shadow:0 3px 0 hsl(24 45% 38%)}
 .chalkboard{background:radial-gradient(ellipse at 30% 10%,hsl(140 6% 23%),hsl(var(--chalk)) 70%);color:hsl(var(--chalk-ink));font-family:'VT323',monospace;border-left:10px solid hsl(24 45% 32%)}
+/* Light cards must not inherit the dark drawer's cream chalk text. */
+.chalkboard .bg-card{color:hsl(var(--card-foreground))}
 .chalkboard h2,.chalkboard h3{font-family:'Pixelify Sans',monospace}
 .chalkboard button{min-height:44px}
 .chalk-line{border-bottom:2px dashed hsl(var(--chalk-ink)/.3)}

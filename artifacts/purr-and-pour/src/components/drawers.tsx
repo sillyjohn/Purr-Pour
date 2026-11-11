@@ -147,7 +147,7 @@ export function CartDrawer({
                 <li key={l.key} className="chalk-line pb-3" data-testid={`row-cart-${l.key}`}>
                   <div className="flex items-baseline justify-between gap-3 text-xl">
                     <span className="uppercase">{m?.name ?? "Unavailable item"}</span>
-                    <span>{money((m?.priceCents ?? 0) * l.quantity)}</span>
+                    <span className="font-number text-2xl">{money((m?.priceCents ?? 0) * l.quantity)}</span>
                   </div>
                   <div className="flex items-center justify-between text-base text-[hsl(var(--chalk-ink)/.65)]">
                     <span>
@@ -155,7 +155,7 @@ export function CartDrawer({
                     </span>
                     <span className="flex items-center gap-1">
                       <button aria-label="Decrease quantity" className="p-1 hover:text-[hsl(var(--lamp))]" onClick={() => qty(l.key, -1)} data-testid={`button-dec-${l.key}`}><Minus size={16} /></button>
-                      <span className="w-6 text-center text-lg text-[hsl(var(--chalk-ink))]">{l.quantity}</span>
+                      <span className="font-number w-6 text-center text-xl text-[hsl(var(--chalk-ink))]">{l.quantity}</span>
                       <button aria-label="Increase quantity" className="p-1 hover:text-[hsl(var(--lamp))]" onClick={() => qty(l.key, 1)} data-testid={`button-inc-${l.key}`}><Plus size={16} /></button>
                       <button aria-label="Remove item" className="ml-2 p-1 hover:text-[hsl(4_80%_70%)]" onClick={() => setLines((ls) => ls.filter((x) => x.key !== l.key))} data-testid={`button-remove-${l.key}`}><Trash2 size={16} /></button>
                     </span>
@@ -166,7 +166,7 @@ export function CartDrawer({
           </ul>
           <div className="mt-4 flex justify-between font-pixel text-2xl text-[hsl(var(--lamp))]">
             <span>Total</span>
-            <span data-testid="text-cart-total">{money(total)}</span>
+            <span className="font-number text-3xl" data-testid="text-cart-total">{money(total)}</span>
           </div>
 
           <form className="mt-6 space-y-4" onSubmit={(e) => { e.preventDefault(); if (valid) submit(true); }}>
@@ -201,7 +201,7 @@ export function CartDrawer({
                   : "Card payment is not connected yet, so real orders can't be paid online. Practice orders work in the meantime."}
               </p>
               <button type="button" disabled={!shop?.paymentEnabled || !valid || place.isPending} onClick={() => submit(false)} className={`${chalkBtn} mt-3 w-full`} data-testid="button-live-order">
-                Pay {money(total)} and order
+                Pay <span className="font-number text-xl">{money(total)}</span> and order
               </button>
             </div>
             {err && <p role="alert" className="text-lg text-[hsl(4_80%_72%)]" data-testid="text-order-error">{err}</p>}

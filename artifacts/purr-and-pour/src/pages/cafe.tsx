@@ -58,7 +58,7 @@ function MenuCard({ item, onAdd, i }: { item: MenuItem; onAdd: (l: Omit<CartLine
           <h3 className="font-pixel text-xl leading-tight uppercase">{item.name}</h3>
           {item.badge && <span className="font-pixel mt-1 inline-block bg-[hsl(var(--denim))] px-1.5 py-0.5 text-[10px] tracking-wider text-[hsl(var(--lamp))] uppercase">{item.badge}</span>}
         </div>
-        <span className="font-pixel slat px-2 py-0.5 text-lg" data-testid={`text-price-${item.id}`}>{money(item.priceCents)}</span>
+        <span className="font-number slat px-2 py-0.5 text-2xl" data-testid={`text-price-${item.id}`}>{money(item.priceCents)}</span>
       </div>
       <p className="text-muted-foreground mt-2 flex-1 text-sm leading-snug">{item.description}</p>
       {item.available ? (
@@ -80,7 +80,7 @@ function MenuCard({ item, onAdd, i }: { item: MenuItem; onAdd: (l: Omit<CartLine
           <div className="flex items-center gap-2 pt-1">
             <div className="flex items-center border-2 border-[hsl(var(--walnut))]">
               <button aria-label="Less" className="px-2 font-pixel" onClick={() => setQty((q) => Math.max(1, q - 1))} data-testid={`button-qty-dec-${item.id}`}>-</button>
-              <span className="font-pixel w-6 text-center" aria-live="polite">{qty}</span>
+              <span className="font-number w-6 text-center text-xl" aria-live="polite">{qty}</span>
               <button aria-label="More" className="px-2 font-pixel" onClick={() => setQty((q) => Math.min(10, q + 1))} data-testid={`button-qty-inc-${item.id}`}>+</button>
             </div>
             <button
@@ -110,10 +110,10 @@ function OrderTicket({ o }: { o: Order }) {
   return (
     <li className="bg-card px-border p-4" data-testid={`card-order-${o.id}`}>
       <div className="flex flex-wrap items-baseline justify-between gap-2">
-        <p className="font-pixel text-xl">Ticket #{o.number}</p>
+        <p className="font-pixel text-xl">Ticket <span className="font-number text-2xl">#{o.number}</span></p>
         <div className="flex gap-2">
           {o.practice && <span className="font-pixel bg-[hsl(var(--lamp))] px-2 py-0.5 text-xs">PRACTICE - no charge</span>}
-          <span className="font-pixel text-muted-foreground text-xs">{new Date(o.createdAt).toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" })}</span>
+          <span className="font-number text-muted-foreground text-lg">{new Date(o.createdAt).toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" })}</span>
         </div>
       </div>
       <p className="text-muted-foreground text-sm">{o.lines.map((l) => `${l.quantity}x ${l.name}`).join(", ")} / {money(o.totalCents)}</p>
@@ -288,7 +288,7 @@ export default function Cafe() {
           <button className={navBtn} aria-label="Account" onClick={() => setDrawer("account")} data-testid="button-open-account"><UserRound size={16} /><span className="hidden md:inline">{me.data?.signedIn ? me.data.name.split(" ")[0] || "You" : "Sign in"}</span></button>
           <button className={`${navBtn} !bg-primary text-primary-foreground`} onClick={() => setDrawer("cart")} data-testid="button-open-cart" aria-label={`Open tab, ${cartCount} items`}>
             <ShoppingBag size={16} />
-            <span key={cartCount} className="anim-pop">{cartCount}</span>
+            <span key={cartCount} className="anim-pop font-number text-xl">{cartCount}</span>
           </button>
         </div>
       </header>
@@ -349,7 +349,7 @@ export default function Cafe() {
 
       <ChalkDrawer open={drawer === "pets"} onClose={() => setDrawer(null)} title="The Crew" desc="Baristas join your counter as loyalty milestones. Practice orders never count toward stamps." testId="drawer-pets">
         <div className="mb-4 flex items-center justify-between border-b border-dashed border-[hsl(var(--chalk-ink)/.3)] pb-3">
-          <span className="font-pixel text-[hsl(var(--lamp))]" data-testid="text-completed-orders">{completed} {completed === 1 ? "order" : "orders"} stamped</span>
+          <span className="font-pixel text-[hsl(var(--lamp))]" data-testid="text-completed-orders"><span className="font-number text-xl">{completed}</span> {completed === 1 ? "order" : "orders"} stamped</span>
           {!me.data?.signedIn && <button className="min-h-11 underline decoration-dashed" onClick={() => setDrawer("account")} data-testid="button-guest-signin">Sign in to keep progress</button>}
         </div>
         {pets.isLoading ? (
