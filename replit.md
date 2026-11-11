@@ -34,6 +34,7 @@ A single-page, pixel-art coffee shop where interactive pet baristas accompany gu
 - Keep the Node auth edge rather than replacing the requested Java business backend: it preserves the canonical managed Clerk browser/proxy setup while Spring owns all coffee-shop behavior.
 - Never make the first registering customer an administrator. Privileged roles require an explicit, owner-authorized grant to a verified account.
 - Practice mode is deliberate while Stripe and RabbitMQ are not connected. Do not represent practice orders as purchases, award them loyalty, or show fake payment/wallet controls.
+- The user chose secure routing before live admin-tool integration. `/admin/*` uses real Clerk sign-in and the server-returned admin role, but its workspace tools remain explicitly labelled, resettable sample data. Never treat the canvas demo password as an app credential.
 
 ## Product
 
@@ -60,3 +61,5 @@ Guest ordering, customizable menu/cart, pet preview and interaction, server-owne
 ## Pointers
 
 - See the `pnpm-workspace` skill for workspace structure, TypeScript setup, and package details
+- Admin routes: `/admin` opens `/admin/orders`; sections are `/queue`, `/menu`, `/analytics`, `/customer`, and `/structure` under `/admin`. `/auth/continue` routes admins into the workspace after sign-in; other roles return to the café.
+- `services/coffee-api/ADMIN_BACKEND_DESIGN.md` describes the pending live-data integration. The app copy of the preview is in `artifacts/purr-and-pour/src/components/admin-preview`; it does not mutate real orders or catalog data.

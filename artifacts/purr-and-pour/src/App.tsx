@@ -8,6 +8,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import NotFound from "@/pages/not-found";
 import Cafe from "@/pages/cafe";
+import AdminPage, { AuthContinue } from "@/pages/admin";
 import { Route, Switch, useLocation, Router as WouterRouter } from "wouter";
 
 const queryClient = new QueryClient({ defaultOptions: { queries: { refetchOnWindowFocus: false, retry: 1 } } });
@@ -95,7 +96,7 @@ function AuthStage({ children }: { children: ReactNode }) {
 function SignInPage() {
   return (
     <AuthStage>
-      <SignIn routing="path" path={`${basePath}/sign-in`} signUpUrl={`${basePath}/sign-up`} />
+      <SignIn routing="path" path={`${basePath}/sign-in`} signUpUrl={`${basePath}/sign-up`} forceRedirectUrl={`${basePath}/auth/continue`} />
     </AuthStage>
   );
 }
@@ -103,7 +104,7 @@ function SignInPage() {
 function SignUpPage() {
   return (
     <AuthStage>
-      <SignUp routing="path" path={`${basePath}/sign-up`} signInUrl={`${basePath}/sign-in`} />
+      <SignUp routing="path" path={`${basePath}/sign-up`} signInUrl={`${basePath}/sign-in`} forceRedirectUrl={`${basePath}/auth/continue`} />
     </AuthStage>
   );
 }
@@ -154,6 +155,8 @@ function ClerkProviderWithRoutes() {
               <Route path="/" component={Cafe} />
               <Route path="/sign-in/*?" component={SignInPage} />
               <Route path="/sign-up/*?" component={SignUpPage} />
+              <Route path="/auth/continue" component={AuthContinue} />
+              <Route path="/admin/*?" component={AdminPage} />
               <Route component={NotFound} />
             </Switch>
           </RoutedErrorBoundary>

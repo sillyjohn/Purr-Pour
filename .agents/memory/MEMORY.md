@@ -1,0 +1,1 @@
+- [Testing admin roles](testing-admin-roles.md) — programmatic Clerk sign-in does not provision a privileged test account; use a fresh development-only fixture.

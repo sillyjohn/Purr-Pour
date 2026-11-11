@@ -1,6 +1,7 @@
 import { useEffect, useState, type ReactNode } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { SignIn, useClerk, useUser } from "@clerk/react";
+import { Link } from "wouter";
 import {
   getGetMeQueryKey,
   getGetMenuQueryKey,
@@ -304,6 +305,7 @@ export function AccountDrawer({ open, onClose, me }: { open: boolean; onClose: (
           <p className="text-[hsl(var(--chalk-ink)/.7)]">{user?.primaryEmailAddress?.emailAddress}</p>
           <p>Completed orders: <span className="text-[hsl(var(--lamp))]" data-testid="text-account-orders">{me?.completedOrders ?? 0}</span></p>
           <p>Role: {me?.role ?? "customer"}</p>
+          {me?.role === "admin" && <Link href="/admin" className={chalkBtn} data-testid="link-account-admin">Open admin workspace</Link>}
           <button className={chalkBtn} onClick={() => signOut({ redirectUrl: basePath || "/" })} data-testid="button-sign-out">Sign out</button>
         </div>
       ) : (
@@ -312,7 +314,7 @@ export function AccountDrawer({ open, onClose, me }: { open: boolean; onClose: (
             Guest progress is tied to this browser. There's no email claim for guest orders, so stamps earned before signing in stay here.
           </p>
           <div className="-mx-2">
-            <SignIn routing="hash" signUpUrl={`${basePath}/sign-up`} />
+            <SignIn routing="hash" signUpUrl={`${basePath}/sign-up`} forceRedirectUrl={`${basePath}/auth/continue`} />
           </div>
         </div>
       )}
