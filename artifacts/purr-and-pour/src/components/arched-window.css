@@ -121,6 +121,16 @@
   }
 }
 
+/* On narrow screens, anchor the window to the counter rather than the wall.
+   The wall layer keeps its lower panes naturally behind the counter artwork. */
+@media (max-width: 900px) {
+  .arched-window {
+    top: auto;
+    bottom: calc(var(--station-width) * .20);
+    left: calc(50% - var(--station-width) / 2);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .arched-window__glint,
   .window-cloud {
