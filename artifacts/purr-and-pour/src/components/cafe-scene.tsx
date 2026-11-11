@@ -68,8 +68,12 @@ export function CafeScene({
           {loading ? [0, 1, 2].map((n) => <li key={n} className="board-skeleton" />) : boardItems.map((item) => (
             <li key={item.id}>
               <button onClick={() => onCategory(item.category)} className="board-item font-pixel" data-testid={`button-slat-${item.id}`}>
-                <span className={item.available ? "" : "line-through opacity-55"}>{item.name}</span>
-                <span className="font-number text-[1.25em]">{money(item.priceCents)}</span>
+                <span className={`board-name ${item.available ? "" : "line-through opacity-55"}`}>{item.name}</span>
+                <span className="board-price font-number" aria-label={money(item.priceCents)}>
+                  {Array.from(money(item.priceCents)).map((character, index) => (
+                    <span key={index} aria-hidden="true" className={/\d/.test(character) ? "board-price-digit" : "board-price-symbol"}>{character}</span>
+                  ))}
+                </span>
               </button>
             </li>
           ))}

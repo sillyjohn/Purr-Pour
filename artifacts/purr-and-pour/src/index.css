@@ -456,12 +456,13 @@ button{touch-action:manipulation}
 .board-lines{padding:0;margin:0;list-style:none}
 .board-lines li{position:relative;height:44px;margin:0 0 1px}
 .board-lines li:nth-child(n+6){display:none}
-.board-lines li::before{content:"";position:absolute;left:0;right:0;top:50%;height:9px;transform:translateY(-50%);background:linear-gradient(180deg,#d4a276 0%,#b97848 53%,#8d5735 80%,#e0b083 100%);border-top:1px solid #68472e;border-bottom:2px solid #765037;box-shadow:0 2px 0 #7d573d}
-.board-item{position:relative;z-index:1;display:flex;width:100%;height:44px;min-height:44px;justify-content:space-between;gap:10px;align-items:center;text-align:left;color:#171716;font-size:clamp(13px,1.35vw,18px);text-transform:uppercase}
-.board-item span{padding:2px 7px;background:linear-gradient(180deg,#e5b583,#d3a071);border:1px solid #a06c43;box-shadow:1px 1px 0 #6f4a30}
-.board-item span:first-child{max-width:calc(100% - 78px);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.board-item span:last-child{min-width:48px;text-align:right}
-.board-item:hover{color:#59341e;transform:translateX(2px)}
+.board-lines li::before{content:"";position:absolute;left:0;right:0;bottom:6px;height:7px;background:linear-gradient(180deg,#e0b083 0 2px,#bb8054 2px 5px,#805333 5px);border-top:1px solid #ae7951;border-bottom:1px solid #64442e;box-shadow:2px 3px 0 #48332340}
+.board-item{position:relative;z-index:1;display:flex;width:100%;height:44px;min-height:44px;justify-content:space-between;gap:10px;align-items:flex-end;padding:0 clamp(8px,2vw,28px) 14px;text-align:left;color:#20150f;font-size:clamp(13px,1.35vw,18px);text-transform:uppercase}
+.board-name{min-width:0;padding:1px 4px 0;background:linear-gradient(180deg,#e6b88d,#d6a578);box-shadow:2px 1px 0 #67432c40;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;line-height:1.15;font-weight:700}
+.board-price{flex:none;display:flex;align-items:flex-end;gap:2px;font-size:1.4em;line-height:1}
+.board-price-digit{display:inline-block;min-width:.61em;padding:1px 1px 0;text-align:center;background:linear-gradient(110deg,#edc69e,#d7a77c);border-top:1px solid #f3d4b1;border-right:1px solid #b5845e;box-shadow:2px 2px 0 #77523866,3px 3px 0 #49322124}
+.board-price-symbol{font-size:.8em;padding-bottom:1px}
+.board-item:hover .board-name,.board-item:hover .board-price-digit{background:#f0c79d}
 .board-skeleton{height:34px;margin:5px 0;background:#d0d1d5;border:2px solid #9a9da3;animation:pulse 1.5s infinite}
 .scene-action-rail{position:absolute;right:max(12px,env(safe-area-inset-right));top:50%;transform:translateY(-50%);z-index:5;display:grid;gap:8px}
 .scene-action-rail button{display:flex;align-items:center;gap:7px;min-width:48px;min-height:46px;padding:7px;background:#f0f0ef;border:3px solid #593c29;box-shadow:3px 3px 0 #593c29;color:#493321}
