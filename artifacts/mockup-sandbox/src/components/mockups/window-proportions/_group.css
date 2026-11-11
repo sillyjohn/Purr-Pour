@@ -1,0 +1,379 @@
+@import url('https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400;600;700&family=VT323&family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&display=swap');
+:root {
+  --button-outline: rgba(0, 0, 0, 0.1);
+  --badge-outline: rgba(0, 0, 0, 0.05);
+
+  /* Automatic computation of border around primary / danger buttons */
+  --opaque-button-border-intensity: -8; /* In terms of percentages */
+
+  /* Backgrounds applied on top of other backgrounds when hovered/active */
+  --elevate-1: rgba(0, 0, 0, 0.03);
+  --elevate-2: rgba(0, 0, 0, 0.08);
+
+  --background: 30 9% 84%;
+
+  --foreground: 20 47% 15%;
+
+  --border: 25 30% 62%;
+
+  --card: 34 38% 93%;
+
+  --card-foreground: 20 47% 15%;
+
+  --card-border: 25 35% 55%;
+
+  --sidebar: 140 6% 18%;
+
+  --sidebar-foreground: 45 40% 90%;
+
+  --sidebar-border: 140 5% 30%;
+
+  --sidebar-primary: 24 80% 56%;
+
+  --sidebar-primary-foreground: 20 47% 12%;
+
+  --sidebar-accent: 140 5% 24%;
+
+  --sidebar-accent-foreground: 45 40% 90%;
+
+  --sidebar-ring: 45 80% 70%;
+
+  --popover: 34 38% 93%;
+
+  --popover-foreground: 20 47% 15%;
+
+  --popover-border: 25 35% 55%;
+
+  --primary: 22 79% 52%;
+
+  --primary-foreground: 34 60% 97%;
+
+  --secondary: 210 27% 43%;
+
+  --secondary-foreground: 34 60% 96%;
+
+  --muted: 30 14% 78%;
+
+  --muted-foreground: 22 22% 34%;
+
+  --accent: 45 76% 79%;
+
+  --accent-foreground: 20 47% 15%;
+
+  --destructive: 4 66% 46%;
+
+  --destructive-foreground: 34 60% 97%;
+
+  --input: 25 30% 55%;
+  --ring: 22 79% 52%;
+  --chart-1: 22 79% 52%;
+  --chart-2: 210 27% 43%;
+  --chart-3: 31 47% 54%;
+  --chart-4: 45 76% 79%;
+  --chart-5: 140 6% 22%;
+
+  --app-font-sans: 'Bricolage Grotesque', sans-serif;
+  --app-font-serif: 'Pixelify Sans', monospace;
+  --app-font-mono: 'VT323', monospace;
+  --radius: 0.25rem; /* 8px */
+  --shadow-2xs: 0px 2px 0px 0px hsl(202.8169 89.1213% 53.1373% / 0); /*replace with H S L */
+  --shadow-xs: 0px 2px 0px 0px hsl(202.8169 89.1213% 53.1373% / 0); /*replace with H S L */
+  --shadow-sm:
+    0px 2px 0px 0px hsl(202.8169 89.1213% 53.1373% / 0),
+    0px 1px 2px -1px hsl(202.8169 89.1213% 53.1373% / 0);
+  --shadow:
+    0px 2px 0px 0px hsl(202.8169 89.1213% 53.1373% / 0),
+    0px 1px 2px -1px hsl(202.8169 89.1213% 53.1373% / 0);
+  --shadow-md:
+    0px 2px 0px 0px hsl(202.8169 89.1213% 53.1373% / 0),
+    0px 2px 4px -1px hsl(202.8169 89.1213% 53.1373% / 0);
+  --shadow-lg:
+    0px 2px 0px 0px hsl(202.8169 89.1213% 53.1373% / 0),
+    0px 4px 6px -1px hsl(202.8169 89.1213% 53.1373% / 0);
+  --shadow-xl:
+    0px 2px 0px 0px hsl(202.8169 89.1213% 53.1373% / 0),
+    0px 8px 10px -1px hsl(202.8169 89.1213% 53.1373% / 0);
+  --shadow-2xl: 0px 2px 0px 0px hsl(202.8169 89.1213% 53.1373% / 0);
+  --tracking-normal: 0em;
+  --spacing: 0.25rem;
+
+  /* Automatically computed borders - intensity can be controlled by the user by the --opaque-button-border-intensity setting */
+
+  /* Fallback for older browsers */
+  --sidebar-primary-border: hsl(var(--sidebar-primary));
+  --sidebar-primary-border: hsl(
+    from hsl(var(--sidebar-primary)) h s
+      calc(l + var(--opaque-button-border-intensity)) / alpha
+  );
+
+  /* Fallback for older browsers */
+  --sidebar-accent-border: hsl(var(--sidebar-accent));
+  --sidebar-accent-border: hsl(
+    from hsl(var(--sidebar-accent)) h s
+      calc(l + var(--opaque-button-border-intensity)) / alpha
+  );
+
+  /* Fallback for older browsers */
+  --primary-border: hsl(var(--primary));
+  --primary-border: hsl(
+    from hsl(var(--primary)) h s
+      calc(l + var(--opaque-button-border-intensity)) / alpha
+  );
+
+  /* Fallback for older browsers */
+  --secondary-border: hsl(var(--secondary));
+  --secondary-border: hsl(
+    from hsl(var(--secondary)) h s
+      calc(l + var(--opaque-button-border-intensity)) / alpha
+  );
+
+  /* Fallback for older browsers */
+  --muted-border: hsl(var(--muted));
+  --muted-border: hsl(
+    from hsl(var(--muted)) h s calc(l + var(--opaque-button-border-intensity)) /
+      alpha
+  );
+
+  /* Fallback for older browsers */
+  --accent-border: hsl(var(--accent));
+  --accent-border: hsl(
+    from hsl(var(--accent)) h s
+      calc(l + var(--opaque-button-border-intensity)) / alpha
+  );
+
+  /* Fallback for older browsers */
+  --destructive-border: hsl(var(--destructive));
+  --destructive-border: hsl(
+    from hsl(var(--destructive)) h s
+      calc(l + var(--opaque-button-border-intensity)) / alpha
+  );
+}
+.dark {
+  --button-outline: rgba(255, 255, 255, 0.1);
+  --badge-outline: rgba(255, 255, 255, 0.05);
+
+  --opaque-button-border-intensity: 9; /* In terms of percentages */
+
+  /* Backgrounds applied on top of other backgrounds when hovered/active */
+  --elevate-1: rgba(255, 255, 255, 0.04);
+  --elevate-2: rgba(255, 255, 255, 0.09);
+
+  --background: 30 9% 84%;
+
+  --foreground: 20 47% 15%;
+
+  --border: 25 30% 62%;
+
+  --card: 34 38% 93%;
+
+  --card-foreground: 20 47% 15%;
+
+  --card-border: 25 35% 55%;
+
+  --sidebar: 140 6% 18%;
+
+  --sidebar-foreground: 45 40% 90%;
+
+  --sidebar-border: 140 5% 30%;
+
+  --sidebar-primary: 24 80% 56%;
+
+  --sidebar-primary-foreground: 20 47% 12%;
+
+  --sidebar-accent: 140 5% 24%;
+
+  --sidebar-accent-foreground: 45 40% 90%;
+
+  --sidebar-ring: 45 80% 70%;
+
+  --popover: 34 38% 93%;
+
+  --popover-foreground: 20 47% 15%;
+
+  --popover-border: 25 35% 55%;
+
+  --primary: 22 79% 52%;
+
+  --primary-foreground: 34 60% 97%;
+
+  --secondary: 210 27% 43%;
+
+  --secondary-foreground: 34 60% 96%;
+
+  --muted: 30 14% 78%;
+
+  --muted-foreground: 22 22% 34%;
+
+  --accent: 45 76% 79%;
+
+  --accent-foreground: 20 47% 15%;
+
+  --destructive: 4 66% 46%;
+
+  --destructive-foreground: 34 60% 97%;
+
+  /* Used as the border around inputs. Dark mode: Should be a border that is light enough to have high contrast when rendered on a --card background. More contrast than standard --border */
+  --input: 25 30% 55%;
+  --ring: 22 79% 52%;
+  --chart-1: 22 79% 52%;
+  --chart-2: 210 27% 43%;
+  --chart-3: 31 47% 54%;
+  --chart-4: 45 76% 79%;
+  --chart-5: 140 6% 22%;
+
+  --shadow-2xs: 0px 2px 0px 0px hsl(202.8169 89.1213% 53.1373% / 0);
+  --shadow-xs: 0px 2px 0px 0px hsl(202.8169 89.1213% 53.1373% / 0);
+  --shadow-sm:
+    0px 2px 0px 0px hsl(202.8169 89.1213% 53.1373% / 0),
+    0px 1px 2px -1px hsl(202.8169 89.1213% 53.1373% / 0);
+  --shadow:
+    0px 2px 0px 0px hsl(202.8169 89.1213% 53.1373% / 0),
+    0px 1px 2px -1px hsl(202.8169 89.1213% 53.1373% / 0);
+  --shadow-md:
+    0px 2px 0px 0px hsl(202.8169 89.1213% 53.1373% / 0),
+    0px 2px 4px -1px hsl(202.8169 89.1213% 53.1373% / 0);
+  --shadow-lg:
+    0px 2px 0px 0px hsl(202.8169 89.1213% 53.1373% / 0),
+    0px 4px 6px -1px hsl(202.8169 89.1213% 53.1373% / 0);
+  --shadow-xl:
+    0px 2px 0px 0px hsl(202.8169 89.1213% 53.1373% / 0),
+    0px 8px 10px -1px hsl(202.8169 89.1213% 53.1373% / 0);
+  --shadow-2xl: 0px 2px 0px 0px hsl(202.8169 89.1213% 53.1373% / 0);
+}
+:root{--oak:28 55% 52%;--walnut:20 42% 14%;--ginger:22 79% 52%;--denim:210 27% 43%;--lamp:45 76% 79%;--wall:215 13% 91%;--chalk:140 6% 17%;--chalk-ink:45 30% 90%;}
+:root{--oak:28 55% 52%;--walnut:20 42% 14%;--ginger:22 79% 52%;--denim:210 27% 43%;--lamp:45 76% 79%;--wall:215 13% 91%;--chalk:140 6% 17%;--chalk-ink:45 30% 90%;}
+body{background:hsl(var(--wall));image-rendering:auto;}
+html,body,#root{width:100%;height:100%;min-height:100%;overflow:hidden}
+body{overscroll-behavior:none}
+button{touch-action:manipulation}
+.cafe-root{height:100dvh;min-height:0;padding-bottom:env(safe-area-inset-bottom);display:flex;flex-direction:column;overflow:hidden}
+.cafe-root>header{position:relative;top:auto;flex:none;padding-top:env(safe-area-inset-top);padding-left:env(safe-area-inset-left);padding-right:env(safe-area-inset-right);z-index:40}
+.cafe-root>header>div{min-height:58px;padding-top:7px;padding-bottom:7px}
+.cafe-playfield{position:relative;isolation:isolate;flex:1;min-height:0;overflow:hidden;background:#e4e5e9;container-type:size}
+.cafe-wall{position:absolute;inset:0;overflow:hidden;background:linear-gradient(180deg,#e5e6ea 0%,#dedfe3 100%);z-index:-1}
+.cafe-wall{--lamp-cord:clamp(10px,2.8vh,24px);--lamp-height:clamp(42px,6.8vh,58px)}
+.wall-lamp{position:absolute;left:50%;top:0;width:clamp(78px,8.75vw,112px);height:calc(var(--lamp-cord) + var(--lamp-height));transform:translateX(-50%);z-index:1}
+.lamp-cord{position:absolute;left:calc(50% - 2px);top:0;width:4px;height:var(--lamp-cord);background:#454b50;border-left:1px solid #aeb4b7;border-right:1px solid #737a80}
+.lamp-fixture{position:absolute;top:var(--lamp-cord);left:0;width:100%;height:var(--lamp-height);overflow:visible;image-rendering:pixelated;shape-rendering:crispEdges}
+.beam{position:absolute;left:50%;top:calc(var(--lamp-cord) + var(--lamp-height) - 2px);width:clamp(230px,42vw,440px);height:48%;transform:translateX(-50%);background:linear-gradient(180deg,#fff0bd9c 0%,#fff0bd55 58%,#fff0bd0d 100%);clip-path:polygon(43% 0,57% 0,100% 100%,0 100%);z-index:0}
+.menu-board{position:absolute;left:50%;top:clamp(40px,6%,62px);transform:translateX(-50%);width:min(560px,58vw);max-height:60%;padding:0 8px;z-index:3;color:#171716;overflow:hidden}
+.board-heading{display:flex;align-items:center;justify-content:flex-end;gap:10px;height:46px;padding:0 0 4px}
+.board-kicker{margin:0 auto 0 4px;color:#343330;font-size:clamp(11px,1.1vw,14px);text-transform:uppercase;letter-spacing:.09em}
+.board-all{min-height:44px;padding:5px 9px;color:#211910;border:2px solid #604126;background:#d7a16e;box-shadow:2px 2px 0 #64452d;font-size:clamp(11px,1vw,14px);white-space:nowrap}
+.board-lines{padding:0;margin:0;list-style:none}
+.board-lines li{position:relative;height:44px;margin:0 0 1px}
+.board-lines li:nth-child(n+6){display:none}
+.board-lines li::before{content:"";position:absolute;left:0;right:0;bottom:6px;height:7px;background:linear-gradient(180deg,#e0b083 0 2px,#bb8054 2px 5px,#805333 5px);border-top:1px solid #ae7951;border-bottom:1px solid #64442e;box-shadow:2px 3px 0 #48332340}
+.board-item{position:relative;z-index:1;display:flex;width:100%;height:44px;min-height:44px;justify-content:space-between;gap:10px;align-items:flex-end;padding:0 clamp(8px,2vw,28px) 14px;text-align:left;color:#20150f;font-size:clamp(13px,1.35vw,18px);text-transform:uppercase}
+.board-name{min-width:0;padding:1px 4px 0;background:linear-gradient(180deg,#e6b88d,#d6a578);box-shadow:2px 1px 0 #67432c40;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;line-height:1.15;font-weight:700}
+.board-price{flex:none;display:flex;align-items:flex-end;gap:2px;font-size:1.4em;line-height:1}
+.board-price-digit{display:inline-block;min-width:.61em;padding:1px 1px 0;text-align:center;background:linear-gradient(110deg,#edc69e,#d7a77c);border-top:1px solid #f3d4b1;border-right:1px solid #b5845e;box-shadow:2px 2px 0 #77523866,3px 3px 0 #49322124}
+.board-price-symbol{font-size:.8em;padding-bottom:1px}
+.board-item:hover .board-name,.board-item:hover .board-price-digit{background:#f0c79d}
+.board-skeleton{height:34px;margin:5px 0;background:#d0d1d5;border:2px solid #9a9da3;animation:pulse 1.5s infinite}
+.scene-action-rail{position:absolute;right:max(12px,env(safe-area-inset-right));top:50%;transform:translateY(-50%);z-index:5;display:grid;gap:8px}
+.scene-action-rail button{display:flex;align-items:center;gap:7px;min-width:48px;min-height:46px;padding:7px;background:#f0f0ef;border:3px solid #593c29;box-shadow:3px 3px 0 #593c29;color:#493321}
+.scene-action-rail button span{font-size:12px}
+.cafe-floor,.cafe-station{--station-width:min(68vw,960px,calc((100cqh - 350px)*1.9))}
+.cafe-floor{position:absolute;z-index:0;left:0;right:0;bottom:0;height:calc(var(--station-width)*.1106);background-color:#82502f;background-image:url("/__mockup/images/window-proportions/scene/cafe-floor-tile.jpg");background-repeat:repeat-x;background-size:auto 100%;background-position:center bottom;border-top:2px solid #64432f;box-shadow:0 -5px 14px #2c30351a}
+.cafe-station{position:absolute;z-index:1;left:50%;bottom:0;width:var(--station-width);max-width:96vw;aspect-ratio:885/470;transform:translateX(-50%);pointer-events:none}
+.cafe-station-art{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;image-rendering:auto}
+.barista-spot{position:absolute;z-index:2;left:41%;bottom:27%;transform:translateX(-50%);display:flex;align-items:end;gap:clamp(2px,1vw,14px);pointer-events:none}
+.barista-button{position:relative;display:block;width:96px;height:100px;min-width:60px;min-height:60px;padding:0;border:0;background:transparent;cursor:pointer;pointer-events:auto}
+.barista-visual{position:absolute;left:50%;bottom:0;display:block;transform:translateX(-50%) scale(.76);transform-origin:bottom center;pointer-events:none}
+.barista-name{position:absolute;left:50%;bottom:-2px;transform:translate(-50%,100%);white-space:nowrap;padding:2px 7px;background:#ead5a3;border:2px solid #5b3f29;color:#49311f;font-size:12px;pointer-events:none}.barista-name small{font-family:'VT323',monospace;font-size:15px;color:#745336}
+.guest-pet{align-self:end;min-width:44px;min-height:44px;padding:0;border:0;background:transparent;pointer-events:auto}
+.speech-anchor{position:absolute;bottom:calc(100% - 14px);left:50%;transform:translateX(-50%);width:max-content;max-width:230px;z-index:7}
+@media(max-width:640px){
+  .cafe-floor,.cafe-station{--station-width:min(96vw,740px,calc((100cqh - 310px)*1.88))}
+ .cafe-root>header>div{gap:7px;padding-left:10px;padding-right:10px;min-height:56px}
+ .cafe-root>header>div>div.mr-auto{min-width:0;flex:1 1 130px}
+ .cafe-root>header>div>div.mr-auto p:first-child{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+ .cafe-root>header img{width:30px;height:30px}
+ .cafe-root>header .font-pixel.text-xl{font-size:16px}
+ .cafe-root>header .font-chalk{font-size:13px;line-height:1}
+ .cafe-root>header .px-btn{min-width:44px;min-height:44px;justify-content:center;padding:7px}
+  .menu-board{top:clamp(66px,9%,82px);width:min(78vw,560px);max-height:45%;padding:0 4px}
+   .board-heading{height:42px}.board-lines{padding-top:0}.board-item{min-height:44px}
+   .board-lines li:nth-child(n+5){display:none}
+ .scene-action-rail{right:8px;top:49%;gap:6px}
+ .scene-action-rail button{width:44px;min-width:44px;height:44px;min-height:44px;padding:0;justify-content:center}
+ .scene-action-rail button span{display:none}
+  .cafe-station{width:var(--station-width)}
+  .barista-spot{left:41%;bottom:17%;gap:0}
+  .barista-button{width:78px;height:84px;min-width:60px;min-height:60px}
+  .barista-visual{transform:translateX(-50%) scale(.64)}
+ .guest-pet{display:none}
+}
+@media(max-width:375px){
+ .cafe-root>header>div{gap:6px;flex-wrap:wrap}
+ .cafe-root>header>div>div.mr-auto{flex-basis:118px}
+ .cafe-root>header>div>div.mr-auto .font-chalk{display:none}
+ .cafe-root>header>div>div.mr-auto p:first-child{font-size:14px}
+}
+@media(max-height:620px){
+   .cafe-floor,.cafe-station{--station-width:min(58vw,650px,calc((100cqh - 155px)*1.85))}
+   .cafe-wall{--lamp-cord:4px;--lamp-height:36px}
+   .wall-lamp{width:76px}
+   .beam{width:clamp(210px,42vw,380px);height:46%}
+  .menu-board{top:8px;max-height:42%;padding-top:0;padding-bottom:0}
+  .board-kicker{display:none}
+   .board-heading{height:38px}
+  .board-lines li:nth-child(n+2){display:none}
+  .board-lines li{height:44px}
+  .board-item{height:44px;min-height:44px;font-size:13px}
+  .cafe-station{width:var(--station-width)}
+  .barista-spot{bottom:17%;left:41%}
+  .barista-name{bottom:0;transform:translate(-50%,70%)}
+  .barista-button{width:64px;height:68px;min-width:56px;min-height:56px}
+  .barista-visual{transform:translateX(-50%) scale(.54)}
+ .board-all{min-height:44px}
+ .scene-action-rail{top:50%;gap:4px}
+  .scene-action-rail button{min-height:42px;height:42px}
+}
+@media(min-height:850px) and (min-width:641px){
+   .board-lines li:nth-child(n+9){display:list-item}
+   .board-lines li:nth-child(n+10){display:none}
+}
+body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:60;opacity:.07;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence baseFrequency='.9'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)'/%3E%3C/svg%3E");}
+.font-pixel{font-family:'Pixelify Sans',monospace}
+.font-chalk{font-family:'VT323',monospace}
+.font-number{font-family:'VT323',monospace;font-variant-numeric:tabular-nums;font-weight:400;letter-spacing:0}
+.pixelated{image-rendering:pixelated}
+.px-border{box-shadow:0 0 0 3px hsl(var(--walnut)),4px 4px 0 3px hsl(var(--walnut)/.35)}
+.px-btn{box-shadow:0 0 0 2px hsl(var(--walnut)),3px 3px 0 2px hsl(var(--walnut));transition:transform .08s steps(2),box-shadow .08s steps(2)}
+.px-btn:hover:not(:disabled){transform:translate(-1px,-1px);box-shadow:0 0 0 2px hsl(var(--walnut)),4px 4px 0 2px hsl(var(--walnut))}
+.px-btn:active:not(:disabled){transform:translate(3px,3px);box-shadow:0 0 0 2px hsl(var(--walnut)),0 0 0 2px hsl(var(--walnut))}
+.px-btn:disabled{opacity:.5;cursor:not-allowed}
+:focus-visible{outline:3px dashed hsl(var(--ginger));outline-offset:3px}
+.oak{background:repeating-linear-gradient(90deg,hsl(31 47% 54%) 0 46px,hsl(28 45% 46%) 46px 50px),hsl(var(--oak))}
+.slat{background:hsl(28 52% 58%);box-shadow:0 3px 0 hsl(24 45% 38%)}
+.chalkboard{background:radial-gradient(ellipse at 30% 10%,hsl(140 6% 23%),hsl(var(--chalk)) 70%);color:hsl(var(--chalk-ink));font-family:'VT323',monospace;border-left:10px solid hsl(24 45% 32%)}
+/* Light cards must not inherit the dark drawer's cream chalk text. */
+.chalkboard .bg-card{color:hsl(var(--card-foreground))}
+.chalkboard h2,.chalkboard h3{font-family:'Pixelify Sans',monospace}
+.chalkboard button{min-height:44px}
+.chalk-line{border-bottom:2px dashed hsl(var(--chalk-ink)/.3)}
+.chalk-input{background:transparent;border:0;border-bottom:2px solid hsl(var(--chalk-ink)/.5);color:hsl(var(--chalk-ink));font-size:1.35rem;padding:.25rem 0;width:100%}
+.chalk-input:focus{outline:none;border-bottom-color:hsl(var(--lamp))}
+.chalk-input::placeholder{color:hsl(var(--chalk-ink)/.4)}
+@keyframes sprite-play{to{background-position-x:var(--end)}}
+.sprite{background-repeat:no-repeat;image-rendering:pixelated;animation:sprite-play var(--dur) steps(var(--frames)) infinite}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+@keyframes hop{0%,100%{transform:translateY(0)}30%{transform:translateY(-22px)}60%{transform:translateY(0)}75%{transform:translateY(-8px)}}
+@keyframes zzz{0%{opacity:0;transform:translate(0,0)}30%{opacity:1}100%{opacity:0;transform:translate(14px,-26px)}}
+@keyframes steam{0%{opacity:0;transform:translateY(0) scaleX(1)}40%{opacity:.8}100%{opacity:0;transform:translateY(-30px) scaleX(1.6)}}
+@keyframes pop-in{0%{opacity:0;transform:scale(.6) translateY(8px)}70%{transform:scale(1.06)}100%{opacity:1;transform:scale(1)}}
+@keyframes rise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+@keyframes shake{0%,100%{transform:rotate(0)}25%{transform:rotate(-6deg)}75%{transform:rotate(6deg)}}
+@keyframes sway{0%,100%{transform:rotate(-1.5deg)}50%{transform:rotate(1.5deg)}}
+.anim-bob{animation:bob 1.6s steps(4) infinite}.anim-hop{animation:hop .7s steps(6)}.anim-shake{animation:shake .4s steps(4) 3}
+.anim-pop{animation:pop-in .35s steps(5) both}.anim-rise{animation:rise .5s ease-out both}.anim-sway{animation:sway 4s ease-in-out infinite;transform-origin:top center}
+.zz{animation:zzz 2.2s linear infinite}.steam{animation:steam 2.4s ease-out infinite}
+.bubble{position:relative;background:hsl(34 60% 97%);color:hsl(var(--walnut));font-family:'Pixelify Sans',monospace;box-shadow:0 0 0 3px hsl(var(--walnut)),4px 4px 0 3px hsl(var(--walnut)/.3)}
+.bubble::after{content:"";position:absolute;left:24px;bottom:-12px;width:12px;height:12px;background:hsl(34 60% 97%);box-shadow:3px 0 0 hsl(var(--walnut)),0 3px 0 hsl(var(--walnut)),3px 3px 0 hsl(var(--walnut));}
+.reduce-motion *,.reduce-motion *::before,.reduce-motion *::after{animation-duration:.001s!important;animation-iteration-count:1!important;transition:none!important}
+@media (prefers-reduced-motion: reduce){*,*::before,*::after{animation-duration:.001s!important;animation-iteration-count:1!important;transition:none!important}}
+.cl-formFieldInput::placeholder{color:hsl(22 22% 45%);opacity:1}
+.cl-formButtonPrimary:hover{filter:brightness(1.08)}
+

@@ -1,0 +1,133 @@
+.counter-aligned-window {
+  --counter-window-width: clamp(112px, 14vw, 170px);
+  --counter-station-width: min(68vw, 960px, calc((100cqh - 350px) * 1.9));
+  position: absolute;
+  z-index: 0;
+  bottom: calc(var(--counter-station-width) * .22 + 48px);
+  left: clamp(20px, calc(50% - var(--counter-station-width) / 2 + 10px), 10vw);
+  width: var(--counter-window-width);
+  height: calc(var(--counter-window-width) * 1.48);
+  pointer-events: none;
+  filter: drop-shadow(5px 7px 0 rgb(64 55 46 / 13%));
+}
+
+.counter-aligned-window__art {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  image-rendering: pixelated;
+}
+
+.counter-aligned-window .window-sky {
+  opacity: 0;
+}
+
+.counter-aligned-window[data-phase="dawn"] .window-sky--dawn,
+.counter-aligned-window[data-phase="day"] .window-sky--day,
+.counter-aligned-window[data-phase="dusk"] .window-sky--dusk,
+.counter-aligned-window[data-phase="night"] .window-sky--night {
+  opacity: 1;
+}
+
+.counter-aligned-window .window-sun,
+.counter-aligned-window .window-moon,
+.counter-aligned-window .window-stars {
+  opacity: 0;
+}
+
+.counter-aligned-window[data-phase="dawn"] .window-sun,
+.counter-aligned-window[data-phase="day"] .window-sun,
+.counter-aligned-window[data-phase="dusk"] .window-sun {
+  opacity: 1;
+}
+
+.counter-aligned-window[data-phase="night"] .window-moon,
+.counter-aligned-window[data-phase="night"] .window-stars {
+  opacity: 1;
+}
+
+.counter-aligned-window .window-cloud {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: counter-window-drift 26s ease-in-out infinite alternate;
+}
+
+.counter-aligned-window .window-cloud--two {
+  animation-duration: 34s;
+  animation-direction: alternate-reverse;
+}
+
+.counter-aligned-window__glint {
+  position: absolute;
+  top: 10%;
+  left: 29%;
+  width: 2px;
+  height: 8%;
+  background: rgb(255 255 255 / 45%);
+  opacity: .45;
+  animation: counter-window-glint 7s ease-in-out infinite;
+}
+
+.counter-aligned-window--reduced .window-cloud,
+.counter-aligned-window--reduced .counter-aligned-window__glint {
+  animation: none;
+}
+
+@keyframes counter-window-drift {
+  from { transform: translateX(-2px); }
+  to { transform: translateX(3px); }
+}
+
+@keyframes counter-window-glint {
+  0%, 100% { opacity: .2; }
+  50% { opacity: .52; }
+}
+
+@media (max-width: 900px) {
+  .counter-aligned-window {
+    --counter-window-width: clamp(82px, 16vw, 126px);
+    height: calc(var(--counter-window-width) * 1.42);
+    top: max(340px, calc(100% - var(--counter-station-width) * .531 - var(--counter-window-width) * 1.42 - 24px));
+    bottom: auto;
+    left: 8px;
+  }
+}
+
+@media (max-width: 640px) {
+  .counter-aligned-window {
+    --counter-window-width: clamp(76px, 19vw, 112px);
+    --counter-station-width: min(96vw, 740px, calc((100cqh - 310px) * 1.88));
+    height: calc(var(--counter-window-width) * 1.42);
+    top: auto;
+    bottom: calc(var(--counter-station-width) * .531 + 24px);
+    left: 7px;
+  }
+}
+
+@media (max-height: 620px) {
+  .counter-aligned-window {
+    --counter-window-width: clamp(78px, 11vw, 118px);
+    --counter-station-width: min(58vw, 650px, calc((100cqh - 155px) * 1.85));
+    height: calc(var(--counter-window-width) * 1.34);
+    top: auto;
+    bottom: calc(var(--counter-station-width) * .18 + 32px);
+  }
+}
+
+@media (max-width: 640px) and (max-height: 620px) {
+  .counter-aligned-window {
+    --counter-window-width: 76px;
+    height: 102px;
+    top: auto;
+    bottom: calc(var(--counter-station-width) * .531 + 12px);
+    left: 5px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .counter-aligned-window__glint,
+  .counter-aligned-window .window-cloud {
+    animation: none;
+  }
+}

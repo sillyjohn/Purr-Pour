@@ -7,5 +7,10 @@ export const modules: ModuleMap = {
   "./components/mockups/welcome-wall/Current.tsx": () => import("../components/mockups/welcome-wall/Current.tsx"),
   "./components/mockups/welcome-wall/FramedWelcome.tsx": () => import("../components/mockups/welcome-wall/FramedWelcome.tsx"),
   "./components/mockups/welcome-wall/PaintedWelcome.tsx": () => import("../components/mockups/welcome-wall/PaintedWelcome.tsx"),
-  "./components/mockups/welcome-wall/WoodenWelcome.tsx": () => import("../components/mockups/welcome-wall/WoodenWelcome.tsx")
+  "./components/mockups/welcome-wall/WoodenWelcome.tsx": () => import("../components/mockups/welcome-wall/WoodenWelcome.tsx"),
+  "./components/mockups/window-proportions/CounterAligned.tsx": () => import("../components/mockups/window-proportions/CounterAligned.tsx"),
+  "./components/mockups/window-proportions/Current.tsx": () => import("../components/mockups/window-proportions/Current.tsx"),
+  "./components/mockups/window-proportions/FullHeightArch.tsx": () => import("../components/mockups/window-proportions/FullHeightArch.tsx"),
+  "./components/mockups/window-proportions/HighArch.tsx": () => import("../components/mockups/window-proportions/HighArch.tsx"),
+  "./components/mockups/window-proportions/TallClassic.tsx": () => import("../components/mockups/window-proportions/TallClassic.tsx")
 };
