@@ -2,6 +2,7 @@ import { ClipboardList, PawPrint, Plus, ShoppingBag } from "lucide-react";
 import type { MenuItem, Pet } from "@workspace/api-client-react";
 import { PetSprite, SpeechCloud, type PetState } from "@/components/pet-sprite";
 import { PaintedWelcome } from "@/components/painted-welcome";
+import { ArchedWindow } from "@/components/arched-window";
 import { asset, money, spriteKind } from "@/lib/cafe";
 
 type CafeSceneProps = {
@@ -34,6 +35,7 @@ export function CafeScene({
   return (
     <main className="cafe-playfield" aria-label="Purr & Pour cafe">
       <div className="cafe-wall" aria-hidden="true">
+        <ArchedWindow reduced={reduced} />
         <div className="wall-lamp">
           <span className="lamp-cord" />
           <svg className="lamp-fixture" viewBox="0 0 120 50" preserveAspectRatio="none" role="presentation" shapeRendering="crispEdges" aria-hidden="true">
