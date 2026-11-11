@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useReducer, useRef, useState, type ReactNode } from "react";
+import { useEffect, useMemo, useReducer, useRef, useState, type CSSProperties, type ReactNode } from "react";
 import { useForm } from "react-hook-form";
 import { Form } from "@/components/ui/form";
 import {
@@ -29,6 +29,16 @@ const STATUS_SHORT: Record<OrderStatus, string> = { placed: "placed", inprogress
 const CATEGORY_LABEL: Record<MenuCategory, string> = { coffee: "Coffee", tea: "Tea", treats: "Treats" };
 const dateFromDemo = new Intl.DateTimeFormat("en-CA", { timeZone: "America/Los_Angeles", year: "numeric", month: "2-digit", day: "2-digit" }).format(new Date(DEMO_CLOCK));
 const chartColors = { main: "#61A9BD", pale: "#8CCEDE", yellow: "#CED14E", green: "#44986D", pink: "#DD83C9" };
+const numeralStyle: CSSProperties = {
+  fontFamily: "'VT323', monospace",
+  fontVariantNumeric: "tabular-nums",
+  letterSpacing: ".025em",
+};
+const metricNumeralStyle: CSSProperties = { ...numeralStyle, fontSize: 34, lineHeight: .9 };
+
+function PixelNumber({ children, style, className }: { children: ReactNode; style?: CSSProperties; className?: string }) {
+  return <span className={className} style={{ ...numeralStyle, ...style }}>{children}</span>;
+}
 
 function getQueue(state: ReturnType<typeof createInitialState>) {
   return state.queueOrderIds.map((id) => state.orders.find((order) => order.id === id)).filter((order): order is CafeOrder => !!order && (order.status === "placed" || order.status === "inprogress"));
@@ -148,7 +158,7 @@ function AdminPrototype() {
       <aside className="admin-sidebar">
         <div className="admin-side-kicker">Behind the counter</div>
         <nav className="admin-nav" aria-label="Café operations">
-          {NAV.map(({ id, label, Icon }) => <button key={id} type="button" aria-current={view === id ? "page" : undefined} onClick={() => changeView(id)} data-testid={`nav-${id}`}><Icon />{label}{id === "queue" && <span className="admin-count" style={{ marginLeft: "auto" }}>{queue.length}</span>}</button>)}
+          {NAV.map(({ id, label, Icon }) => <button key={id} type="button" aria-current={view === id ? "page" : undefined} onClick={() => changeView(id)} data-testid={`nav-${id}`}><Icon />{label}{id === "queue" && <PixelNumber className="admin-count" style={{ marginLeft: "auto", fontSize: 17 }}>{queue.length}</PixelNumber>}</button>)}
           <button type="button" aria-current={view === "customer" ? "page" : undefined} onClick={() => changeView("customer")} data-testid="nav-customer"><Eye />Guest window</button>
         </nav>
         <div className="admin-sidebar-bottom">
@@ -207,10 +217,10 @@ function OrdersView({ state, queue, run }: {
     </div>
     <div className="admin-content">
       <div className="admin-kpi-row">
-        <div className="admin-kpi"><div className="admin-kpi-label">Waiting on the rail</div><div className="admin-kpi-value">{queue.filter((entry) => entry.status === "placed").length}</div><div className="admin-kpi-note">Ready for a barista</div></div>
-        <div className="admin-kpi"><div className="admin-kpi-label">On the bar</div><div className="admin-kpi-value">{queue.filter((entry) => entry.status === "inprogress").length}</div><div className="admin-kpi-note">Being made right now</div></div>
-        <div className="admin-kpi"><div className="admin-kpi-label">Ready for pickup</div><div className="admin-kpi-value">{state.orders.filter((entry) => entry.status === "complete").length}</div><div className="admin-kpi-note">No collected state in this demo</div></div>
-        <div className="admin-kpi"><div className="admin-kpi-label">Today's tickets</div><div className="admin-kpi-value">{state.orders.filter((entry) => laDateKey(entry.createdAt) === dateFromDemo).length}</div><div className="admin-kpi-note">Sample Nov 10 · Los Angeles</div></div>
+        <div className="admin-kpi"><div className="admin-kpi-label">Waiting on the rail</div><div className="admin-kpi-value"><PixelNumber style={metricNumeralStyle}>{queue.filter((entry) => entry.status === "placed").length}</PixelNumber></div><div className="admin-kpi-note">Ready for a barista</div></div>
+        <div className="admin-kpi"><div className="admin-kpi-label">On the bar</div><div className="admin-kpi-value"><PixelNumber style={metricNumeralStyle}>{queue.filter((entry) => entry.status === "inprogress").length}</PixelNumber></div><div className="admin-kpi-note">Being made right now</div></div>
+        <div className="admin-kpi"><div className="admin-kpi-label">Ready for pickup</div><div className="admin-kpi-value"><PixelNumber style={metricNumeralStyle}>{state.orders.filter((entry) => entry.status === "complete").length}</PixelNumber></div><div className="admin-kpi-note">No collected state in this demo</div></div>
+        <div className="admin-kpi"><div className="admin-kpi-label">Today's tickets</div><div className="admin-kpi-value"><PixelNumber style={metricNumeralStyle}>{state.orders.filter((entry) => laDateKey(entry.createdAt) === dateFromDemo).length}</PixelNumber></div><div className="admin-kpi-note">Sample Nov 10 · Los Angeles</div></div>
       </div>
       <div className="admin-toolbar">
         <div className="admin-segment" role="group" aria-label="Order date group">
@@ -223,7 +233,7 @@ function OrdersView({ state, queue, run }: {
       {visible.length ? <div className="admin-panel admin-board">
         {visible.map((order) => <article className="admin-order-card" key={order.id} data-testid={`card-order-${order.id}`}>
           <div>
-            <button type="button" className="admin-order-name" style={{ border: 0, padding: 0, background: "none", cursor: "pointer" }} aria-expanded={expanded === order.id} onClick={() => setExpanded(expanded === order.id ? null : order.id)} data-testid={`button-order-detail-${order.id}`}>#{order.number} · {order.customerName} <ChevronDown size={15} style={{ verticalAlign: "-2px" }} /></button>
+            <button type="button" className="admin-order-name" style={{ border: 0, padding: 0, background: "none", cursor: "pointer" }} aria-expanded={expanded === order.id} onClick={() => setExpanded(expanded === order.id ? null : order.id)} data-testid={`button-order-detail-${order.id}`}><PixelNumber style={{ fontSize: 22 }}>#{order.number}</PixelNumber> · {order.customerName} <ChevronDown size={15} style={{ verticalAlign: "-2px" }} /></button>
             <div className="admin-order-meta">{formatLA(order.createdAt)} · {order.lines.reduce((sum, entry) => sum + entry.quantity, 0)} items · {formatMoney(orderTotalCents(order))}{order.practice ? " · practice" : ""}{!order.paid ? " · unpaid" : ""}</div>
             <ul className="admin-order-lines">{order.lines.map((entry, i) => <li key={`${entry.menuItemId}-${i}`}>{entry.quantity}× {entry.name} <span className="admin-muted-board">· {entry.temperature}{entry.milk !== "none" ? `, ${entry.milk}` : ""}</span></li>)}</ul>
             {order.notes && <div className="admin-order-meta">Note: “{order.notes}”</div>}
@@ -257,7 +267,7 @@ function QueueView({ state, queue, run }: {
       <div className="admin-panel admin-board">
         {queue.length ? queue.map((order, index) => <article className="admin-order-card" key={order.id} data-testid={`queue-order-${order.id}`}>
           <div>
-            <div className="admin-order-name">#{order.number} · {order.customerName}<span className="admin-priority" style={{ marginLeft: 8 }}>#{index + 1} in line</span></div>
+            <div className="admin-order-name"><PixelNumber style={{ fontSize: 22 }}>#{order.number}</PixelNumber> · {order.customerName}<span className="admin-priority" style={{ marginLeft: 8 }}><PixelNumber style={{ fontSize: 17 }}>#{index + 1}</PixelNumber> in line</span></div>
             <div className="admin-order-meta">{formatLA(order.createdAt)} · {formatMoney(orderTotalCents(order))} {order.practice ? "· practice cup" : ""}</div>
             <ul className="admin-order-lines">{order.lines.map((entry, i) => <li key={`${entry.menuItemId}-${i}`}>{entry.quantity}× {entry.name} <span className="admin-muted-board">· {entry.temperature}{entry.milk !== "none" ? `, ${entry.milk}` : ""}</span>{entry.notes && <span className="admin-muted-board"> · {entry.notes}</span>}</li>)}</ul>
             {order.notes && <div className="admin-order-meta">Cup note: “{order.notes}”</div>}
@@ -298,7 +308,7 @@ function MenuView({ state, run }: {
           <div style={{ padding: "10px 12px", borderBottom: "1px dashed rgba(225,225,204,.34)", display: "flex", justifyContent: "space-between", alignItems: "center" }}><h2 className="admin-board-title" style={{ margin: 0 }}>{CATEGORY_LABEL[category]}</h2><span className="admin-tag">{shown.filter((item) => item.category === category).length} on board</span></div>
           {shown.filter((item) => item.category === category).map((item) => <div className="admin-menu-row" key={item.id} data-testid={`row-menu-${item.id}`}>
             <div>
-              <div className="admin-menu-name">{item.name}<span style={{ marginLeft: 9, color: "#e8d99b" }}>{formatMoney(item.priceCents)}</span></div>
+            <div className="admin-menu-name">{item.name}<PixelNumber style={{ marginLeft: 9, color: "#e8d99b", fontSize: 21 }}>{formatMoney(item.priceCents)}</PixelNumber></div>
               <div className="admin-menu-description">{item.description || "A little something from the counter."}</div>
               <div style={{ display: "flex", gap: 5, marginTop: 5 }}><span className="admin-tag">{item.available ? "Available" : item.archived ? "Archived" : "86'd"}</span>{item.archived && <span className="admin-tag">History kept</span>}</div>
             </div>
@@ -380,10 +390,10 @@ function AnalyticsView({ state }: { state: ReturnType<typeof createInitialState>
       {!analytics ? <p className="admin-alert" role="alert" data-testid="error-analytics-range">{result.error} No results are shown until the dates are valid.</p> : <>
       {analytics.orderVolume === 0 && <p className="admin-alert" data-testid="empty-analytics">No non-practice orders in this range. Item rankings include the catalog's zero-sale items.</p>}
       <div className="admin-kpi-row">
-        <div className="admin-kpi"><div className="admin-kpi-label">Gross item sales</div><div className="admin-kpi-value" data-testid="metric-sales">{formatMoney(analytics.salesCents)}</div><div className="admin-kpi-note">Before tax, fees and refunds</div></div>
-        <div className="admin-kpi"><div className="admin-kpi-label">Paid sale orders</div><div className="admin-kpi-value" data-testid="metric-sale-orders">{analytics.orderCount}</div><div className="admin-kpi-note">{analytics.orderVolume} total non-practice orders</div></div>
-        <div className="admin-kpi"><div className="admin-kpi-label">Units sold</div><div className="admin-kpi-value" data-testid="metric-units">{analytics.units}</div><div className="admin-kpi-note">Quantity across paid sale tickets</div></div>
-        <div className="admin-kpi"><div className="admin-kpi-label">Excluded tickets</div><div className="admin-kpi-value">{analytics.excludedCount}</div><div className="admin-kpi-note">Unpaid, practice, or cancelled</div></div>
+        <div className="admin-kpi"><div className="admin-kpi-label">Gross item sales</div><div className="admin-kpi-value" data-testid="metric-sales"><PixelNumber style={metricNumeralStyle}>{formatMoney(analytics.salesCents)}</PixelNumber></div><div className="admin-kpi-note">Before tax, fees and refunds</div></div>
+        <div className="admin-kpi"><div className="admin-kpi-label">Paid sale orders</div><div className="admin-kpi-value" data-testid="metric-sale-orders"><PixelNumber style={metricNumeralStyle}>{analytics.orderCount}</PixelNumber></div><div className="admin-kpi-note"><PixelNumber style={{ fontSize: 18 }}>{analytics.orderVolume}</PixelNumber> total non-practice orders</div></div>
+        <div className="admin-kpi"><div className="admin-kpi-label">Units sold</div><div className="admin-kpi-value" data-testid="metric-units"><PixelNumber style={metricNumeralStyle}>{analytics.units}</PixelNumber></div><div className="admin-kpi-note">Quantity across paid sale tickets</div></div>
+        <div className="admin-kpi"><div className="admin-kpi-label">Excluded tickets</div><div className="admin-kpi-value"><PixelNumber style={metricNumeralStyle}>{analytics.excludedCount}</PixelNumber></div><div className="admin-kpi-note">Unpaid, practice, or cancelled</div></div>
       </div>
       <div className="admin-chart-grid">
         <section className="admin-chart-card">
@@ -391,36 +401,36 @@ function AnalyticsView({ state }: { state: ReturnType<typeof createInitialState>
           <button className="admin-btn admin-btn-quiet admin-btn-small" style={{ marginTop: 6 }} type="button" onClick={() => setDirection(direction === "best" ? "least" : "best")} data-testid="button-ranking-direction">{direction === "best" ? "Show least sold" : "Show most sold"}</button>
           <div className="admin-chart" data-testid="chart-menu-rankings"><ResponsiveContainer width="100%" height="100%"><BarChart data={rankChartData} layout="vertical" margin={{ top: 3, right: 24, bottom: 3, left: 0 }}>
             <CartesianGrid strokeDasharray="3 4" horizontal={false} stroke="#c9bea9" />
-            <XAxis type="number" allowDecimals={false} domain={[0, "dataMax"]} tick={{ fill: "#635541", fontSize: 12 }} />
+            <XAxis type="number" allowDecimals={false} domain={[0, "dataMax"]} tick={{ fill: "#635541", fontSize: 16, fontFamily: "'VT323', monospace" }} />
             <YAxis type="category" dataKey="name" width={120} tick={{ fill: "#514432", fontSize: 12 }} />
             <Tooltip formatter={(value) => [`${value} units`, "Quantity"]} contentStyle={{ background: "#f6efdf", border: "1px solid #87785f", fontFamily: "'VT323',monospace" }} />
-            <Bar dataKey="units" fill={chartColors.main} barSize={13}><LabelList dataKey="units" position="right" /></Bar>
+            <Bar dataKey="units" fill={chartColors.main} barSize={13}><LabelList dataKey="units" position="right" fontFamily="'VT323', monospace" fontSize={16} /></Bar>
           </BarChart></ResponsiveContainer></div>
           <details data-testid="details-ranking-values"><summary>All item counts and gross sales</summary><table className="admin-table" style={{minWidth: 0}}><thead><tr><th>Item</th><th>Units</th><th>Gross</th></tr></thead><tbody>{ranking.map(item => <tr key={item.id}><td>{item.name}</td><td>{item.units}</td><td>{formatMoney(item.salesCents)}</td></tr>)}</tbody></table></details>
         </section>
         <section className="admin-chart-card">
           <h3>By section</h3><div className="admin-chart-caption">Units sold · category totals by actual sales</div>
           <div className="admin-chart" data-testid="chart-category-totals"><ResponsiveContainer width="100%" height="100%"><BarChart data={analytics.categoryTotals.map((entry) => ({ ...entry, category: CATEGORY_LABEL[entry.category] }))} margin={{ top: 10, right: 12, bottom: 3, left: -14 }}>
-            <CartesianGrid strokeDasharray="3 4" vertical={false} stroke="#c9bea9" /><XAxis type="category" dataKey="category" tick={{ fill: "#514432", fontSize: 12 }} /><YAxis type="number" allowDecimals={false} domain={[0, "dataMax"]} tick={{ fill: "#635541", fontSize: 12 }} />
+            <CartesianGrid strokeDasharray="3 4" vertical={false} stroke="#c9bea9" /><XAxis type="category" dataKey="category" tick={{ fill: "#514432", fontSize: 12 }} /><YAxis type="number" allowDecimals={false} domain={[0, "dataMax"]} tick={{ fill: "#635541", fontSize: 16, fontFamily: "'VT323', monospace" }} />
             <Tooltip formatter={(value) => [`${value ?? 0} units`, "Quantity"]} contentStyle={{ background: "#f6efdf", border: "1px solid #87785f", fontFamily: "'VT323',monospace" }} />
-            <Bar dataKey="units" name="Units" fill={chartColors.main} barSize={35}><LabelList dataKey="units" position="top" /></Bar>
+            <Bar dataKey="units" name="Units" fill={chartColors.main} barSize={35}><LabelList dataKey="units" position="top" fontFamily="'VT323', monospace" fontSize={16} /></Bar>
           </BarChart></ResponsiveContainer></div>
           <div className="admin-subtle" style={{ display: "flex", justifyContent: "space-around" }}>{analytics.categoryTotals.map((entry) => <span key={entry.category}>{CATEGORY_LABEL[entry.category]} · {entry.units} units · {formatMoney(entry.salesCents)}</span>)}</div>
         </section>
         <section className="admin-chart-card">
           <h3>When cups land</h3><div className="admin-chart-caption">All non-practice orders by hour · includes unpaid/cancelled · LA time</div>
           <div className="admin-chart" data-testid="chart-orders-by-hour"><ResponsiveContainer width="100%" height="100%"><BarChart data={analytics.byHour.filter((entry) => entry.orders > 0 || Number(entry.hour.slice(0, 2)) >= 6 && Number(entry.hour.slice(0, 2)) <= 22)} margin={{ top: 12, right: 12, bottom: 2, left: -14 }}>
-            <CartesianGrid strokeDasharray="3 4" vertical={false} stroke="#c9bea9" /><XAxis type="category" dataKey="hour" tick={{ fill: "#635541", fontSize: 11 }} interval={2} /><YAxis type="number" allowDecimals={false} domain={[0, "dataMax"]} tick={{ fill: "#635541", fontSize: 12 }} />
+            <CartesianGrid strokeDasharray="3 4" vertical={false} stroke="#c9bea9" /><XAxis type="category" dataKey="hour" tick={{ fill: "#635541", fontSize: 15, fontFamily: "'VT323', monospace" }} interval={2} /><YAxis type="number" allowDecimals={false} domain={[0, "dataMax"]} tick={{ fill: "#635541", fontSize: 16, fontFamily: "'VT323', monospace" }} />
             <Tooltip formatter={(value) => [`${value} orders`, "Tickets"]} contentStyle={{ background: "#f6efdf", border: "1px solid #87785f", fontFamily: "'VT323',monospace" }} />
-            <Bar dataKey="orders" fill={chartColors.main} barSize={19}><LabelList dataKey="orders" position="top" formatter={function(value: unknown) { return Number(value) > 0 ? String(value) : ""; }} /></Bar>
+            <Bar dataKey="orders" fill={chartColors.main} barSize={19}><LabelList dataKey="orders" position="top" fontFamily="'VT323', monospace" fontSize={16} formatter={function(value: unknown) { return Number(value) > 0 ? String(value) : ""; }} /></Bar>
           </BarChart></ResponsiveContainer></div>
         </section>
         <section className="admin-chart-card">
           <h3>By café day</h3><div className="admin-chart-caption">All non-practice orders · days with tickets only · LA dates</div>
           <div className="admin-chart" data-testid="chart-orders-by-day"><ResponsiveContainer width="100%" height="100%"><BarChart data={analytics.byDay} margin={{ top: 12, right: 12, bottom: 2, left: -14 }}>
-            <CartesianGrid strokeDasharray="3 4" vertical={false} stroke="#c9bea9" /><XAxis type="category" dataKey="day" tick={{ fill: "#635541", fontSize: 11 }} /><YAxis type="number" allowDecimals={false} domain={[0, "dataMax"]} tick={{ fill: "#635541", fontSize: 12 }} />
+            <CartesianGrid strokeDasharray="3 4" vertical={false} stroke="#c9bea9" /><XAxis type="category" dataKey="day" tick={{ fill: "#635541", fontSize: 13, fontFamily: "'VT323', monospace" }} /><YAxis type="number" allowDecimals={false} domain={[0, "dataMax"]} tick={{ fill: "#635541", fontSize: 16, fontFamily: "'VT323', monospace" }} />
             <Tooltip formatter={(value) => [`${value} orders`, "Tickets"]} contentStyle={{ background: "#f6efdf", border: "1px solid #87785f", fontFamily: "'VT323',monospace" }} />
-            <Bar dataKey="orders" fill={chartColors.main} barSize={25}><LabelList dataKey="orders" position="top" /></Bar>
+            <Bar dataKey="orders" fill={chartColors.main} barSize={25}><LabelList dataKey="orders" position="top" fontFamily="'VT323', monospace" fontSize={16} /></Bar>
           </BarChart></ResponsiveContainer></div>
         </section>
       </div>
@@ -489,7 +499,7 @@ function CustomerView({ state, run, flash }: {
           {(["coffee", "tea", "treats"] as MenuCategory[]).map((category) => <div key={category}>
             <div style={{ padding: "9px 11px 5px", font: "17px 'Pixelify Sans',monospace", color: "#e8d692" }}>{CATEGORY_LABEL[category]}</div>
             {available.filter((item) => item.category === category).map((item) => <div className="admin-menu-row" key={item.id} data-testid={`customer-menu-item-${item.id}`}>
-              <div><div className="admin-menu-name">{item.name}<span style={{ marginLeft: 7, color: "#e8d99b" }}>{formatMoney(item.priceCents)}</span></div><div className="admin-menu-description">{item.description}</div></div>
+              <div><div className="admin-menu-name">{item.name}<PixelNumber style={{ marginLeft: 7, color: "#e8d99b", fontSize: 21 }}>{formatMoney(item.priceCents)}</PixelNumber></div><div className="admin-menu-description">{item.description}</div></div>
               <button className="admin-btn admin-btn-dark admin-btn-small" type="button" aria-label={`Add ${item.name} to tray`} onClick={() => addItem(item.id)} data-testid={`button-customer-add-${item.id}`}><Plus size={15} /> Add</button>
             </div>)}
           </div>)}
