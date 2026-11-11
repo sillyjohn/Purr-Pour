@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { getWindowPhase } from "@/lib/window-time";
+import { getWindowPhase, getWindowPreviewDate } from "@/lib/window-time";
 import "./arched-window.css";
 
 function formatLocalTime(date: Date): string {
@@ -15,6 +15,9 @@ type ArchedWindowProps = {
 
 export function ArchedWindow({ reduced = false }: ArchedWindowProps) {
   const [now, setNow] = useState(() => new Date());
+  const [previewTime] = useState(() => import.meta.env.DEV
+    ? new URLSearchParams(window.location.search).get("windowTime")
+    : null);
 
   useEffect(() => {
     const refresh = () => setNow(new Date());
@@ -26,15 +29,16 @@ export function ArchedWindow({ reduced = false }: ArchedWindowProps) {
     };
   }, []);
 
-  const phase = getWindowPhase(now);
-  const localTime = formatLocalTime(now);
+  const sceneryTime = getWindowPreviewDate(now, previewTime);
+  const phase = getWindowPhase(sceneryTime);
+  const localTime = formatLocalTime(sceneryTime);
 
   return (
     <div
       className={`arched-window${reduced ? " arched-window--reduced" : ""}`}
       data-phase={phase}
       role="img"
-      aria-label={`Arched cafe window showing ${phase}, local time ${localTime}`}
+      aria-label={`Arched cafe window showing ${phase}, ${sceneryTime === now ? "local time" : "preview time"} ${localTime}`}
       data-testid="cafe-arched-window"
     >
       <svg

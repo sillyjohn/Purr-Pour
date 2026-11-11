@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { getWindowPhase } from "../src/lib/window-time.ts";
+import { getWindowPhase, getWindowPreviewDate } from "../src/lib/window-time.ts";
 
 test("window scenery follows local-clock phases at each transition", () => {
   for (const [hour, minute, phase] of [
@@ -10,5 +10,18 @@ test("window scenery follows local-clock phases at each transition", () => {
     [23, 59, "night"],
   ]) {
     assert.equal(getWindowPhase(new Date(2026, 10, 10, hour, minute)), phase);
+  }
+});
+
+test("scenery previews cover each phase without changing the actual clock", () => {
+  const now = new Date(2026, 10, 10, 12, 34, 56);
+  for (const [time, phase] of [["06:00", "dawn"], ["12:00", "day"], ["18:00", "dusk"], ["22:00", "night"]]) {
+    assert.equal(getWindowPhase(getWindowPreviewDate(now, time)), phase);
+    assert.equal(now.getHours(), 12);
+    assert.equal(now.getMinutes(), 34);
+    assert.equal(now.getSeconds(), 56);
+  }
+  for (const invalid of [null, "", "24:00", "12:60", "6:00", "noon", "<script>"]) {
+    assert.equal(getWindowPreviewDate(now, invalid), now);
   }
 });

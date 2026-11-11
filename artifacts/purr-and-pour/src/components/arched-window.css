@@ -121,13 +121,14 @@
   }
 }
 
-/* On narrow screens, anchor the window to the counter rather than the wall.
-   The wall layer keeps its lower panes naturally behind the counter artwork. */
+/* Keep the narrow-screen window in the clear wall area above the pastry case.
+   Both offsets follow the artwork's proportions as the counter scales. */
 @media (max-width: 900px) {
   .arched-window {
-    top: auto;
-    bottom: calc(var(--station-width) * .20);
+    top: calc(100% - var(--station-width) * .531 + var(--station-width) * .018);
+    bottom: auto;
     left: calc(50% - var(--station-width) / 2);
+    height: min(calc(var(--window-size) * 1.4), calc(var(--station-width) * .20));
   }
 }
 
